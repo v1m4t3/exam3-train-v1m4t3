@@ -1,68 +1,96 @@
 import { Form, Button, Alert, Container, Card, Row, Col, InputGroup } from 'react-bootstrap';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router';
 import API from '../API';
+
+
 
 function TotpForm(props) {
   const [totpCode, setTotpCode] = useState('');
-  const [errorMessage, setErrorMessage] = useState('') ;
+  const [errorMessage, setErrorMessage] = useState('');
 
   const navigate = useNavigate();
 
   const doTotpVerify = () => {
     API.totpVerify(totpCode)
-      .then( () => {
+      .then(() => {
         setErrorMessage('');
         props.totpSuccessful();
         navigate('/');
       })
-      .catch( () => {
-        // NB: Generic error message
+      .catch(() => {
         setErrorMessage('Wrong code, please try again');
-      })
-  }
+      });
+  };
 
   const handleSubmit = (event) => {
-      event.preventDefault();
-      setErrorMessage('');
+    event.preventDefault();
+    setErrorMessage('');
 
-      // Some validation
-      let valid = true;
-      if (totpCode === '' || totpCode.length !== 6)
-          valid = false;
-      
-      if (valid) {
-        doTotpVerify(totpCode);
-      } else {
-        setErrorMessage('Invalid content in form: either empty or not 6-char long');
-      }
+    if (totpCode === '' || totpCode.length !== 6) {
+      setErrorMessage('Invalid code: must be 6 digits.');
+      return;
+    }
+
+    doTotpVerify(totpCode);
   };
-  
+
   return (
-      <Container>
-          <Row>
-              <Col xs={3}></Col>
-              <Col xs={6}>
-                  <h2>Second Factor Authentication</h2>
-                  <h5>Please enter the code that you read on your device</h5>
-                  <Form onSubmit={handleSubmit}>
-                      {errorMessage ? <Alert variant='danger' dismissible onClick={()=>setErrorMessage('')}>{errorMessage}</Alert> : ''}
-                      <Form.Group controlId='totpCode'>
-                          <Form.Label>Code</Form.Label>
-                          <Form.Control type='text' value={totpCode} onChange={ev => setTotpCode(ev.target.value)} />
-                      </Form.Group>
-                      <Button className='my-2' type='submit'>Validate</Button>
-                      <Button className='my-2 mx-2' variant='danger' onClick={()=>navigate('/')}>Cancel</Button>
-                  </Form>
-              </Col>
-              <Col xs={3}></Col>
-          </Row>
-      </Container>
-    )
-   
+    <Container fluid className="d-flex vh-100 justify-content-center align-items-center">
+      <Row className="w-100 justify-content-center">
+        <Col xs={12} md={6} lg={4}>
+          <Card className="shadow-lg p-4 rounded-4">
+            <Card.Body>
+              <div className="text-center mb-4">
+                <i className="bi bi-shield-lock fs-1 text-primary"></i>
+                <h3 className="mt-2" style={{ color: "#6c63ff" }}>Two-Factor Authentication</h3>
+                <p className="text-muted">Enter the 6-digit code from your app</p>
+              </div>
+
+              <Form onSubmit={handleSubmit}>
+                {errorMessage && (
+                  <Alert
+                    variant="danger"
+                    dismissible
+                    onClose={() => setErrorMessage('')}
+                  >
+                    {errorMessage}
+                  </Alert>
+                )}
+
+                <Form.Group controlId="totpCode" className="mb-3">
+                  <Form.Label>Authentication Code</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={totpCode}
+                    maxLength={6}
+                    onChange={ev => setTotpCode(ev.target.value)}
+                    placeholder="123456"
+                  />
+                </Form.Group>
+
+                <div className="d-flex justify-content-between mt-4">
+                  <Button
+                    type="submit"
+                    style={{ backgroundColor: "#6c63ff", border: "none" }}
+                  >
+                    <i className="bi bi-check-circle me-2"></i> Validate
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => navigate('/')}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
+  );
 }
-
-
 
 
 function LoginForm(props) {

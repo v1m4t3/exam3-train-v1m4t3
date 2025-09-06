@@ -6,7 +6,8 @@ import { Footer } from './FooterBarComponents.jsx';
 function Layout(props) {
 
   return (
-    <Container fluid>
+    //<Container fluid>
+      <>
       <Row>
         <Col>
           <NavigationBar user={props.user} loggedIn={props.loggedIn} logout={props.logout} loggedInTotp={props.loggedInTotp} />
@@ -18,7 +19,8 @@ function Layout(props) {
           <Footer />
         </Col>
       </Row>
-    </Container>
+      </>
+    //</Container>
   )
 }
 
