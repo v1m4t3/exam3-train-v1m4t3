@@ -1,3 +1,11 @@
+script to generate password:
+
+node -e "const crypto=require('crypto'); const password='pwd'; const salt=crypto.randomBytes(16).toString('hex'); crypto.scrypt(password,salt,32,(err,hash)=>{if(err)throw err; console.log('Password:',password); console.log('Salt:',salt); console.log('Hash:',hash.toString('hex'));});"
+
+
+
+
+
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/010GyyLK)
 # Exam #1234: "Exam Title"
 ## Student: s123456 LASTNAME FIRSTNAME 
