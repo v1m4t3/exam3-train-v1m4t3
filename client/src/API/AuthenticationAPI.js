@@ -1,7 +1,7 @@
 /**
- * All the API calls
- */
-
+ * Authentication API calls
+ *
+**/
 import dayjs from "dayjs";
 
 const URL = 'http://localhost:3001/api';

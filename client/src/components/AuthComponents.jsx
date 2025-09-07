@@ -1,7 +1,7 @@
 import { Form, Button, Alert, Container, Card, Row, Col, InputGroup } from 'react-bootstrap';
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router';
-import API from '../API';
+import API from '../API/AuthenticationAPI';
 
 
 

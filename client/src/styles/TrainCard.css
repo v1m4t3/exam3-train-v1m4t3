@@ -1,0 +1,97 @@
+.train-card {
+  max-width: 750px;
+  margin: 20px auto;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.train-date {
+  font-size: 1.5rem;
+  font-weight: 600;
+  /* color: #6c63ff; */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 0.5rem;
+}
+
+.station-name {
+  font-size: 1.3rem;
+  color: #555;
+}
+
+.station-code {
+  font-size: 1.9rem;
+  font-weight: bold;
+  color: #ffb007;
+
+  /* color: #222; */
+}
+
+.time {
+  font-size: 1.1rem;
+  color: #888;
+}
+
+.train-number {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #6c63ff;
+}
+
+.duration {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.proceed-btn {
+  background-color: #6c63ff;
+  border: none;
+  font-weight: bold;
+  padding: 0.5rem 2rem;
+  border-radius: 50px;
+  transition: background-color 0.2s ease;
+}
+
+.proceed-btn:hover {
+  background-color: #574fd3;
+}
+
+/* linea centrale */
+.dotted-line-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.dot-end {
+  width: 8px;
+  height: 8px;
+  background-color: #6c63ff;
+  border-radius: 50%;
+  margin: 0 8px;
+}
+
+.circle-center {
+  width: 50px;
+  height: 50px;
+  background-color: #fff;
+  border: 5px solid #6c63ff;
+  border-radius: 60%;
+}
+
+.separator {
+  flex-grow: 1;
+  height: 2px;
+  background-image: repeating-linear-gradient(
+    to right,
+    #6c63ff 0px,
+    #6c63ff 2px,
+    transparent 2px,
+    transparent 6px
+  );
+}

@@ -10,7 +10,8 @@ import { DefaultRoute } from './components/DefaultRouteComponents.jsx';
 import { ReservationRoute } from './components/ReservationRouteComponents.jsx';
 import { LoginWithTotp } from './components/AuthComponents.jsx';
 
-import API from './API.js';
+import API from './API/AuthenticationAPI.js';
+import TrainAPI from './API/TrainAPI.js';
 import { LoginForm, TotpForm } from './components/AuthComponents.jsx';
 
 
@@ -18,6 +19,7 @@ import { LoginForm, TotpForm } from './components/AuthComponents.jsx';
 
 
 function App() {
+  const [trains, setTrains] = useState([]);
   // state moved up into App
   const [initialLoading, setInitialLoading] = useState(true);
 
@@ -42,7 +44,6 @@ function App() {
       }
     }
     setErrorMsg(errMsg);
-
     if (errMsg === 'Not authenticated')
       setTimeout(() => {  // do logout in the app state
         setUser(undefined); setLoggedIn(false); setDirty(true)
@@ -50,8 +51,22 @@ function App() {
     else
       setTimeout(()=>setDirty(true), 2000);  // Fetch the current version from server, after a while
   }
+// ***** Train functions *****
+  useEffect(() => {
+
+    TrainAPI.getAllTrains()
+        .then(fetchedTrains => {
+            setTrains(fetchedTrains);
+            setInitialLoading(false);
+            setDirty(false);
+        })
+        .catch(err => {
+            console.error("Error fetching trains:", err);
+        });
+  }, []);
 
 
+// ***** Authentication functions *****
   useEffect(()=> {
     const checkAuth = async() => {
       try {
@@ -87,7 +102,8 @@ function App() {
   return (
     <Routes>
       <Route path='/' element={<Layout user={user} loggedIn={loggedIn} logout={doLogOut} loggedInTotp={loggedInTotp} />}>
-          <Route index element={ <ReservationRoute /> } />
+          <Route index element={ <ReservationRoute listOfTrains={trains}
+          initialLoading={initialLoading} errorMsg={errorMsg} setErrorMsg={setErrorMsg}  /> } />
       </Route>
       <Route path='/login' element={ 
          <LoginWithTotp loginSuccessful={loginSuccessful} loggedIn={loggedIn} user={user} 
