@@ -10,6 +10,7 @@ require('dotenv').config(); // load the environment variables from the .env file
 
 //const filmDao = require('./dao-films'); // module for accessing the films table in the DB
 const userDao = require('./dao-users'); // module for accessing the user table in the DB
+const trainDao = require('./dao-trains'); // module for accessing the trains table in the DB
 
 /*** init express and set-up the middlewares ***/
 const app = express();
@@ -112,9 +113,44 @@ const errorFormatter = ({ location, msg, param, value, nestedErrors }) => {
 };
 
 
-/*** Reservations APIs ***/
+/*** Train APIs ***/
 
+app.get('/api/trains', 
+  function(req, res) {
+    console.log('DEBUG: train list request');
+    trainDao.listTrains()
+    .then((trains) => {res.json(trains);})
+    .catch((err) => {res.status(500).json(err);});
+  }
+);
 
+app.get('/api/trains/:trainId/cars', 
+  [
+    check('trainId').isInt({min:1}).withMessage('must be a positive integer')
+  ],
+  function(req, res) {
+    const trainId = req.params.trainId;
+    console.log(`DEBUG: cars list request for train ${trainId}`);
+    trainDao.getExistingCarsByTrainId(trainId)
+    .then((cars) => {res.json(cars);})
+    .catch((err) => {res.status(500).json(err);});
+  }
+);
+
+app.get('/api/trains/:trainId/cars/:carId/seats',
+  [
+    check('trainId').isInt({min:1}).withMessage('must be a positive integer'),
+    check('carId').isInt({min:1}).withMessage('must be a positive integer')
+  ],
+  function(req, res) {
+    const trainId = req.params.trainId;
+    const carId = req.params.carId;
+    console.log(`DEBUG: seats list request for train ${trainId} and car ${carId}`);
+    trainDao.getInfoSeatsByTrainIdAndCarId(trainId, carId)
+    .then((seats) => {res.json(seats);})
+    .catch((err) => {res.status(500).json(err);});
+  }
+);
 
 
 

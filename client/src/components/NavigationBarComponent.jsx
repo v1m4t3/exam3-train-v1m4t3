@@ -32,7 +32,7 @@ function NavigationBar(props) {
             </Button>
           )}
           <Button variant='outline-light' size="lg" onClick={props.logout}>
-            Logout
+            <i className="bi bi-box-arrow-right"></i>
           </Button>
         </div>
       ) : (
