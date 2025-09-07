@@ -18,5 +18,10 @@ function Train(id, trainNumber, departureStation, departureTime, arrivalStation,
 
 }
 
+function Car(idCar, carName, trainId){
+    this.carId = idCar;
+    this.carName = carName;
+    this.trainId = trainId;
+}
 
-export { Train };
+export { Train, Car };
