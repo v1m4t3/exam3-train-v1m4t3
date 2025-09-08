@@ -1,0 +1,194 @@
+:root{
+  --train-bg: #f6f7f9;
+  --train-border: #cfd5dc;
+  --seat-free: #ffffff;
+  --seat-border: #c9ced6;
+  --seat-text: #1d2430;
+  --aisle: #eef1f5;
+  --row-label: #6b7686;
+  --accent: #3b82f6;
+  --busy: #e74c3c;
+}
+
+* { box-sizing: border-box; }
+
+.train-page{
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:1.2rem;
+  padding:2rem 1rem 3rem;
+  background: radial-gradient(1200px 600px at 50% -200px, #ffffff 0 55%, #f4f6f9 70%, #eef1f5 100%);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.train-title{
+  margin:0;
+  font-weight:700;
+  font-size:clamp(1.1rem, 1.2rem + 1vw, 1.8rem);
+  color:#111827;
+}
+
+/* --- layout treno --- */
+.train-train{
+  display:grid;
+  grid-template-rows: 28px auto 24px;
+  gap:10px;
+  align-items:center;
+  filter: drop-shadow(0 10px 24px rgba(16,24,40,.12));
+}
+
+/* “muso” arrotondato */
+.train-nose{
+  width:100%;
+  height:100%;
+  background: var(--train-bg);
+  border:1px solid var(--train-border);
+  border-top-left-radius: 999px 36px;
+  border-top-right-radius: 999px 36px;
+}
+
+/* “coda” arrotondata */
+.train-tail{
+  width:100%;
+  height:100%;
+  background: var(--train-bg);
+  border:1px solid var(--train-border);
+  border-bottom-left-radius: 999px 24px;
+  border-bottom-right-radius: 999px 24px;
+}
+
+/* corpo con file e corridoio */
+.train-car{
+  background: var(--train-bg);
+  border:1px solid var(--train-border);
+  border-radius: 16px;
+  padding: 14px 10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  position:relative;
+}
+
+/* una riga = 7 colonne: label | 2 sedili | corridoio | 2 sedili | label */
+.train-row{
+  display:grid;
+  grid-template-columns: minmax(26px, 36px) repeat(2, 1fr) 16px repeat(2, 1fr) minmax(26px, 36px);
+  gap:8px;
+  align-items:center;
+}
+
+
+
+.train-row-2 {
+ display:grid;
+  grid-template-columns: minmax(26px, 36px) repeat(2, 1fr) 16px repeat(2, 1fr) minmax(26px, 36px);
+  gap:8px;
+  align-items:center; 
+}
+/* row con 3 colonne → label | 1 sx | corridoio | 2 dx | label */
+.train-row-3 {
+  display: grid;
+  grid-template-columns:
+    minmax(26px, 36px)  /* label sx */
+    min-content         /* sedili sinistra */
+    1fr                 /* corridoio sinistra */
+    min-content         /* sedili centro */
+    1fr                 /* corridoio destra */
+    min-content         /* sedili destra */
+    minmax(26px, 36px); /* label dx */
+  align-items: center;
+  gap: 8px;
+}
+
+
+
+/* row con 4 colonne → label | 2 sx | corridoio | 2 dx | label */
+.train-row-4 {
+  display:grid;
+  grid-template-columns: minmax(26px, 36px) repeat(2, 1fr) 16px repeat(2, 1fr) minmax(26px, 36px);
+  gap:8px;
+  align-items:center;
+}
+
+/* corridoio centrale */
+.train-aisle{
+  width:100%;
+  height:100%;
+  background: var(--aisle);
+  border-radius:8px;
+  outline:1px dashed #dde3ea;
+  outline-offset:-3px;
+}
+
+/* etichetta numero fila ai bordi */
+.train-row-label{
+  text-align:center;
+  font-size: 12px;
+  color: var(--row-label);
+  user-select:none;
+}
+
+/* sedile */
+.train-seat{
+  position:relative;
+  width:100%;
+  aspect-ratio: 1 / 1;             /* quadrotto */
+  border:1px solid var(--seat-border);
+  border-radius:8px;
+  background: var(--seat-free);
+  color: var(--seat-text);
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  transition: transform .05s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.train-seat:focus-visible{
+  outline:3px solid color-mix(in oklab, var(--accent), white 70%);
+  outline-offset:2px;
+}
+
+.train-seat:hover{
+  transform: translateY(-1px);
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+  border-color: color-mix(in oklab, var(--accent), white 70%);
+}
+
+/* etichetta sul sedile */
+.train-seat-label{
+  position:absolute;
+  inset:auto 6px 6px auto;
+  font-size:11px;
+  font-weight:600;
+  opacity:.9;
+  pointer-events:none;
+}
+
+/* stati esempio (per integrazione futura) */
+.train-seat.selected{
+  background: color-mix(in oklab, var(--accent), white 82%);
+  border-color: var(--accent);
+}
+.train-seat.busy{
+  background: color-mix(in oklab, var(--busy), white 80%);
+  border-color: var(--busy);
+  color:#7b1212;
+}
+
+/* legenda */
+.train-legend{
+  display:flex;
+  gap:16px;
+  font-size:13px;
+  color:#3c4657;
+}
+.train-legend-item{ display:flex; align-items:center; gap:8px; }
+.train-legend-swatch{
+  width:18px; height:18px; border-radius:5px; border:1px solid var(--seat-border); background: var(--seat-free);
+  display:inline-block;
+}
+.train-legend-swatch.selected{ background: color-mix(in oklab, var(--accent), white 82%); border-color: var(--accent); }
+.train-legend-swatch.busy{ background: color-mix(in oklab, var(--busy), white 80%); border-color: var(--busy); }
