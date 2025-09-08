@@ -114,3 +114,25 @@
   color: white;
   border-color: #6c63ff;
 }
+
+.seat-red-icon path {
+  color: #D32F2F;               
+  fill: #FFCDD2 !important; 
+  stroke-width: 2px !important;          
+}
+
+.seat-red-icon:hover path {
+  fill: #FF8A80 !important; 
+  color: #B71C1C;               
+}
+
+.seat-green-icon path {
+  color: #388E3C;               
+  fill: #C8E6C9 !important; 
+  stroke-width: 2px !important;          
+}
+
+.seat-green-icon:hover path {
+  fill: #81C784 !important; 
+  color: #1B5E20;;               
+}

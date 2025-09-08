@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { Train, Car } from '../Models/TrainModels';
+import { Train, Car, SeatsInfo } from '../Models/TrainModels';
 
 const URL = 'http://localhost:3001/api/trains';
 
@@ -38,4 +38,19 @@ async function getTrainCarsDetails(trainId) {
     }
 }
 
-export default { getAllTrains, getTrainCarsDetails };
+async function getSeatsDetailsByCarAndTrain(carId, trainId) {
+    let response = await fetch(`${URL}/${trainId}/cars/${carId}/seats`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    if (response.ok) {
+        const seatsDetails = await response.json();
+        return new SeatsInfo(seatsDetails);
+    } else {
+        const errDetail = await response.json();
+        throw errDetail.message;
+    }
+}
+export default { getAllTrains, getTrainCarsDetails, getSeatsDetailsByCarAndTrain };

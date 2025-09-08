@@ -7,15 +7,20 @@ import { Train } from '../Models/TrainModels';
 import TrainAPI from '../API/TrainAPI.js';
 import { capitalizeWords } from '../utils.js';
 
+import SeatIcon from '../assets/icons/seatIcon.svg?react';
+
 function TrainCard({ train }) {
 
   
   const [trainDetails, setTrainDetails] = useState(null);
   const [carDetails, setCarDetails] = useState(null);
+  const [seatsDetails, setSeatsDetails] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [selectedClass, setSelectedClass] = useState(null);
-  const [initialLoading, setInitialLoading] = useState(true);
 
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [seatsLoading, setSeatsLoading] = useState(true);
+  
   useEffect(() => {
     if (showDetails) {
       console.log("Showing details for train:", train);
@@ -48,9 +53,18 @@ function TrainCard({ train }) {
   const handleClassSelection = (car) => {
     setSelectedClass(car.carName);
 
-    // Esegui qui la tua query (API call, fetch, ecc.)
-    console.log("🚀 Selected class:", car);
+    console.log(" Selected class:", car);
     // es: TrainAPI.getSeats(className).then(...);
+    TrainAPI.getSeatsDetailsByCarAndTrain(car.carId, train.id)
+      .then(seatsDetails => {
+        console.log("Fetched seats details:", seatsDetails);
+        setSeatsDetails(seatsDetails);
+        setSeatsLoading(false);
+      })
+      .catch(err => {
+        console.error("Error fetching seats details:", err);
+      });
+
   };
 
 
@@ -117,6 +131,22 @@ function TrainCard({ train }) {
         </div>
       ) : null} 
 
+     { showDetails && !initialLoading && selectedClass && !seatsLoading ? (
+        <div className="mt-4">
+          {seatsDetails ? (
+          <>
+            <CarSeatsInfo
+              carSeats={selectedClass}
+              totalSeats={seatsDetails.totalSeats}
+              availableSeats={seatsDetails.availableSeats}
+              occupiedSeats={seatsDetails.bookedSeats}
+            />
+          </>
+          ) : (
+            <div>No seats information available.</div>
+          )}
+        </div>
+      ) : null}
       </Card.Body>
     </Card>
   );
@@ -135,3 +165,22 @@ function DottedLineWithEnds() {
 }
 
 export { TrainCard };
+
+const CarSeatsInfo = ({ carSeats, totalSeats, availableSeats, occupiedSeats }) => {
+  return (
+    <div className="container p-3">
+      <div className="d-flex align-items-center mb-2 fw-bold fs-5">
+        <span>CAR SEATS :</span>
+        <span className="mx-3">{availableSeats}</span>
+        <SeatIcon className="seat-green-icon" />
+        <span className="mx-3">|</span>
+        <span className="me-2">{occupiedSeats}</span>
+        <SeatIcon className="seat-red-icon" />
+      </div>
+
+      <div className="ms-2 mb-3 fs-6">
+        Total seats : {totalSeats}
+      </div>
+    </div>
+  );
+};
