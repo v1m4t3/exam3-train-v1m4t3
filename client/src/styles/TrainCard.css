@@ -96,23 +96,23 @@
   );
 }
 
-.custom-button {
+.card-car-button {
   color: #6c63ff;
   border: 2px solid #6c63ff;
   background-color: transparent;
   transition: all 0.2s ease-in-out;
 }
 
-.custom-button:hover {
-  background-color: #6c63ff;
-  color: white;
-}
-
-/* Bottone selezionato */
-.custom-button.selected {
-  background-color: #6c63ff;
+.card-car-button:hover {
+  background-color: #0a56c9;
   color: white;
   border-color: #6c63ff;
+}
+
+.card-car-button.selected {
+  background-color: #6c63ff;
+  color: white;
+ 
 }
 
 .seat-red-icon path {
@@ -124,6 +124,7 @@
 .seat-red-icon:hover path {
   fill: #FF8A80 !important; 
   color: #B71C1C;               
+  cursor: pointer;
 }
 
 .seat-green-icon path {
@@ -135,4 +136,9 @@
 .seat-green-icon:hover path {
   fill: #81C784 !important; 
   color: #1B5E20;;               
+  cursor: pointer;
+}
+
+.seat-container {
+  z-index: 10;
 }

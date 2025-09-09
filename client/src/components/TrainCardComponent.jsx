@@ -1,4 +1,4 @@
-import { Card, Button, Row, Col, Popover, OverlayTrigger } from 'react-bootstrap';
+import { Alert, Card, Container, Button, Row, Col, Popover, OverlayTrigger } from 'react-bootstrap';
 import '../styles/TrainCard.css';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
@@ -22,6 +22,11 @@ function TrainCard({ train }) {
   const [initialLoading, setInitialLoading] = useState(true);
   const [seatsLoading, setSeatsLoading] = useState(true);
   
+  const [showAlert, setShowAlert] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+
+
   useEffect(() => {
     if (showDetails) {
       console.log("Showing details for train:", train);
@@ -29,9 +34,18 @@ function TrainCard({ train }) {
       TrainAPI.getTrainCarsDetails(train.id)
         .then(fetchedCars => {
           console.log("Fetched cars:", fetchedCars);
+          if (!Array.isArray(fetchedCars) || fetchedCars.length === 0) {
+            setShowAlert(true);
+            setShowDetails(false);
+            setSelectedClass(null);
+            setSeatsDetails(null);
+            setInitialLoading(false);
+            return;
+          }
           setCarDetails(fetchedCars);
           setInitialLoading(false); 
         })
+        
         .catch(err => {
           console.error("Error fetching train cars:", err);
         });
@@ -40,7 +54,7 @@ function TrainCard({ train }) {
   }, [showDetails]);
 
   useEffect(() => {
-    if (showDetails && !initialLoading && carDetails.length > 0 && !selectedClass) {
+    if (showDetails && !initialLoading && Array.isArray(carDetails) && carDetails.length > 0 && !selectedClass) {
       handleClassSelection(carDetails[0]);
     }
   }, [showDetails, initialLoading, carDetails]);
@@ -51,6 +65,11 @@ function TrainCard({ train }) {
     setInitialLoading(true);
   };
 
+  const handleHideDetails = () => {
+    setShowDetails(false);
+    setSelectedClass(null);
+    setSeatsDetails(null);
+  };
   const handleClassSelection = (car) => {
     setSelectedClass(car.carName);
 
@@ -58,10 +77,17 @@ function TrainCard({ train }) {
     // es: TrainAPI.getSeats(className).then(...);
     TrainAPI.getSeatsDetailsByCarAndTrain(car.carId, train.id)
       .then(seatsDetails => {
+        if (!seatsDetails || !seatsDetails.seats || seatsDetails.seats.length === 0) {
+          setSeatsDetails(null);
+          setSeatsLoading(false);
+          setShowAlert(true);
+          return;
+        }
         console.log("Fetched seats details:", seatsDetails);
         setSeatsDetails(seatsDetails);
         setSeatsLoading(false);
       })
+
       .catch(err => {
         console.error("Error fetching seats details:", err);
       });
@@ -110,27 +136,37 @@ function TrainCard({ train }) {
           <Button className="proceed-btn" onClick={handleProceed}>
             PROCEED
           </Button>
-        </div> : null}
+        </div> : 
+        <div className="text-end mt-4">
+          <Button className="proceed-btn" onClick={handleHideDetails}>
+            HIDE DETAILS
+          </Button>
+        </div>}
+      
+        {showDetails && !initialLoading && Array.isArray(carDetails) && carDetails.length > 0 ? (
+              <div className="mt-4">
+                <div className="mb-2">Select Class:</div>
+                <Row className="g-2">
+                  {carDetails.map((car, index) => (
+                    <Col key={index} xs={6} md={4} lg={3}>
+                      <Button
+                        className={`w-100 py-2 card-car-button ${selectedClass === car.carName ? 'selected' : ''}`}
+                        variant={selectedClass === car.carName ? "primary" : "outline-primary"}
+                        onClick={() => handleClassSelection(car)}
+                      >
+                        {capitalizeWords(car.carName)}
+                      </Button>
+                    </Col>
+                  ))}
+                </Row>
+              </div>
+            ) : null} 
 
-
-      {showDetails && !initialLoading ? (
-        <div className="mt-4">
-          <div className="mb-2">Select Class:</div>
-          <Row className="g-2">
-            {carDetails.map((car, index) => (
-              <Col key={index} xs={6} md={4} lg={3}>
-                <Button
-                  className={`w-100 py-2 custom-button ${selectedClass === car.carName ? 'active' : ''}`}
-                  variant={selectedClass === car.carName ? "primary" : "outline-primary"}
-                  onClick={() => handleClassSelection(car)}
-                >
-                  {capitalizeWords(car.carName)}
-                </Button>
-              </Col>
-            ))}
-          </Row>
-        </div>
-      ) : null} 
+          {showAlert && (
+            <Alert variant="warning" onClose={() => {setShowAlert(false); setErrorMessage('')}} dismissible className="mt-4">
+              No cars available for this train.
+            </Alert>
+          )}
 
      { showDetails && !initialLoading && selectedClass && !seatsLoading ? (
         <div className="mt-4">
@@ -229,13 +265,17 @@ function Seat({ seat }) {
       delay={{ show: 200, hide: 200 }}
     >
 
-    <Button
+    {/* <Button
       variant='outline-light'
       disabled={seat.isBooked} onClick={() => alert(`Seat ${seat.seatNumber} selected!`)}
-    >
-      <SeatIcon className={`seat-${seat.isBooked ? "red" : "green"}-icon`} >
-      </SeatIcon>
-    </Button>
+    > */}
+      {/* <Container flex="true"> */}
+      <div className="seat-container" >
+        <SeatIcon className={`seat-${seat.isBooked ? "red" : "green"}-icon`} 
+                  onClick={() => alert(`Seat ${seat.seatNumber} selected!`)} />
+      </div>
+      {/* </Container> */}
+    {/* </Button> */}
     </OverlayTrigger>
   );
 }
@@ -244,9 +284,9 @@ function TrainCar({ seatsInfo, columns }) {
   const rows = groupSeatsByRow(seatsInfo.seats);
 
   return (
-    <div className="train-car">
+    <div className="train-car train-car-size">
+
       {Object.entries(rows).map(([rowNumber, rowSeats]) => (
-        // <div className="train-row" key={rowNumber}>
         <div className={`train-row-${columns}`} key={rowNumber}>
           <div className="train-row-label">{rowNumber}</div>
 
@@ -276,15 +316,17 @@ function TrainCarRepresentation({ seatsDetails }) {
   console.log("Rendering TrainCar with columns:", columns);
 
   return (
+    <>
+    <div className="container p-3">
+      <div className="d-flex align-items-center mb-2 fw-bold fs-5">
+        <span>AVAILABLE SEAT: </span> 
+      </div>
+    </div>
+
     <div className="page">
       <TrainCar seatsInfo={seatsDetails} columns={columns} />
-
-      {/* <h2>2ª Classe</h2>
-      <TrainCar seatsInfo={seatsInfoSecond} columns={3} />
-
-      <h2>3ª Classe</h2>
-      <TrainCar seatsInfo={seatsInfoThird} columns={4} /> */}
     </div>
+    </>
   );
 }
 

@@ -70,6 +70,17 @@
   flex-direction:column;
   gap:8px;
   position:relative;
+  
+}
+
+.train-car-size{
+  max-width: 500px;   /* larghezza massima */
+  max-height: 550px;  /* altezza massima */
+  overflow: auto;     /* aggiunge scroll se il contenuto è più grande */
+  margin: 0 auto;     /* opzionale: centra il container orizzontalmente */
+  border: 1px solid #ddd; /* opzionale, per vedere i bordi */
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 /* una riga = 7 colonne: label | 2 sedili | corridoio | 2 sedili | label */
@@ -87,6 +98,7 @@
   grid-template-columns: minmax(26px, 36px) repeat(2, 1fr) 16px repeat(2, 1fr) minmax(26px, 36px);
   gap:8px;
   align-items:center; 
+  justify-content: center;
 }
 /* row con 3 colonne → label | 1 sx | corridoio | 2 dx | label */
 .train-row-3 {

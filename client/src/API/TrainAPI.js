@@ -31,6 +31,9 @@ async function getTrainCarsDetails(trainId) {
     if (response.ok) {
         const cars = await response.json();
         console.log("API fetched cars:", cars);
+        if (!Array.isArray(cars) || cars.length === 0) {
+            return [];
+        }
         return cars.map(c => new Car(c.idCar, c.carName, c.trainId));
     } else {
         const errDetail = await response.json();
@@ -47,6 +50,9 @@ async function getSeatsDetailsByCarAndTrain(carId, trainId) {
     });
     if (response.ok) {
         const seatsDetails = await response.json();
+        if (!Array.isArray(seatsDetails) || seatsDetails.length === 0) {
+            return [];
+        }
         return new SeatsInfo(seatsDetails);
     } else {
         const errDetail = await response.json();

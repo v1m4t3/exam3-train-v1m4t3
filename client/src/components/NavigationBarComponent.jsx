@@ -5,11 +5,12 @@ function NavigationBar(props) {
   const name = props.user && props.user.name + ' ' + props.user.surname;
 
   return (
+    <>
     <Navbar 
       expand="lg" 
       variant="dark" 
       style={{ backgroundColor: "#6c63ff" }}  
-      className="px-3 d-flex justify-content-between align-items-center"
+      className="px-3 d-flex justify-content-between align-items-center fixed-top"
     >
       <Navbar.Brand className="d-flex align-items-center gap-2 fs-4">
         <i className="bi bi-train-front" />
@@ -47,6 +48,10 @@ function NavigationBar(props) {
         </Link>
       )}
     </Navbar>
+
+  {/* Spacer to avoid content being hidden behind the fixed navbar */}
+    <div style={{ height: '56px' }}></div> 
+    </>
   );
 }
 

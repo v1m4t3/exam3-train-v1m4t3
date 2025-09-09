@@ -31,6 +31,7 @@ function Seat(idSeat, seatNumber, isBooked ){
 }
 
 function SeatsInfo(seats){
+    
     this.totalSeats = seats.length;
     this.availableSeats = seats.filter(s => !s.isBooked).length;
     this.bookedSeats = seats.filter(s => s.isBooked).length;
