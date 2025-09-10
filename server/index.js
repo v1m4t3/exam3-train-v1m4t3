@@ -5,7 +5,7 @@ const express = require('express');
 const morgan = require('morgan');  // logging middleware
 const { check, validationResult} = require('express-validator'); // validation middleware
 const cors = require('cors');
-
+const dayjs = require('dayjs');
 require('dotenv').config(); // load the environment variables from the .env file
 
 //const filmDao = require('./dao-films'); // module for accessing the films table in the DB
@@ -200,7 +200,7 @@ app.get('/api/reservations/:reservationId', isLoggedIn,
   [
     check('reservationId').isInt({min:1}).withMessage('must be a positive integer')
   ],
-  function(req, res) {
+  async function(req, res) {
     const errors = validationResult(req).formatWith(errorFormatter);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
@@ -208,9 +208,42 @@ app.get('/api/reservations/:reservationId', isLoggedIn,
 
     const reservationId = req.params.reservationId;
     console.log(`DEBUG: reservation details request for reservation ${reservationId} and user ${req.user.id}`);
-    trainDao.getReservationDetailsByReservationIdAndUserId(reservationId, req.user.id)
-    .then((reservationDetails) => {res.json(reservationDetails);})
-    .catch((err) => {res.status(500).json(err);});
+
+    try {
+      const reservationDetails = await trainDao.getReservationDetailsByReservationIdAndUserId(reservationId, req.user.id);
+      const availableSeatsInCar = await trainDao.getInfoSeatsByTrainIdAndCarIdForNewReservation(req.user.id, reservationDetails.trainId, reservationDetails.carId);
+
+      const result = {
+        reservationId: reservationDetails.reservationId,
+        dateIssued: dayjs(reservationDetails.dateIssued).format('YYYY-MM-DD'),
+        totalPrice: reservationDetails.totalPrice,
+        trainId: reservationDetails.trainId,
+        trainNumber: reservationDetails.trainNumber,
+        departureStation: reservationDetails.departureStation,
+        departureTime: dayjs(reservationDetails.departureTime).format('YYYY-MM-DD HH:mm:ss'),
+        arrivalStation: reservationDetails.arrivalStation,
+        arrivalTime: dayjs(reservationDetails.arrivalTime).format('YYYY-MM-DD HH:mm:ss'),
+        trainDate: dayjs(reservationDetails.trainDate).format('YYYY-MM-DD'),
+        carId: reservationDetails.carId,
+        carName: reservationDetails.carName,
+        seats: availableSeatsInCar.map((s) => ({ 
+          seatId: s.idSeat, 
+          seatNumber: s.seatNumber,
+          seatPrice: s.price,
+          seatStatus: s.isBooked ? s.isLoggedUserReserved ? 'orange' : 'red' : 'green'
+        }))
+      };
+      const reservedSeatIds = reservationDetails.seats.map(s => s.seatId);
+
+      result.seats.forEach(s => { if(reservedSeatIds.includes(s.seatId)) s.seatStatus = 'purple'; });
+
+      res.json(result);
+    } catch(err) {
+      console.error(err.message);
+
+      res.status(500).json(err);
+    }
+  
   }
 );
 /*** Users APIs ***/

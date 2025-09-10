@@ -195,13 +195,16 @@ exports.getReservationDetailsByReservationIdAndUserId = (reservationId, userId) 
                         r.id AS reservationId,
                         r.dateIssued,
                         r.totalPrice,
+                        t.id AS trainId,
                         t.trainNumber,
                         t.departureStation,
                         t.departureTime,
                         t.arrivalStation,
                         t.arrivalTime,
                         t.date AS trainDate,
+                        c.id AS carId,
                         c.carName,
+                        s.Id AS seatId,
                         s.seatNumber,
                         s.price AS seatPrice
                     FROM reservations r
@@ -209,7 +212,7 @@ exports.getReservationDetailsByReservationIdAndUserId = (reservationId, userId) 
                     JOIN cars c ON s.carId = c.id
                     JOIN trains t ON s.trainId = t.id
                     WHERE r.id = ? AND r.userId = ?;`;
-        
+
         db.all(sql, [reservationId, userId], (err, rows) => {
             if (err) {
                 reject(err);
@@ -225,14 +228,17 @@ exports.getReservationDetailsByReservationIdAndUserId = (reservationId, userId) 
                 reservationId: rows[0].reservationId,
                 dateIssued: dayjs(rows[0].dateIssued).format('YYYY-MM-DD'),
                 totalPrice: rows[0].totalPrice,
+                trainId: rows[0].trainId,
                 trainNumber: rows[0].trainNumber,
                 departureStation: rows[0].departureStation,
                 departureTime: dayjs(rows[0].departureTime).format('YYYY-MM-DD HH:mm:ss'),
                 arrivalStation: rows[0].arrivalStation,
                 arrivalTime: dayjs(rows[0].arrivalTime).format('YYYY-MM-DD HH:mm:ss'),
                 trainDate: dayjs(rows[0].trainDate).format('YYYY-MM-DD'),
+                carId: rows[0].carId,
+                carName: rows[0].carName,
                 seats: rows.map((s) => ({
-                    carName: s.carName,
+                    seatId : s.seatId,
                     seatNumber: s.seatNumber,
                     seatPrice: s.seatPrice,
                 })),
