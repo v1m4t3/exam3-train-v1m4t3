@@ -6,6 +6,23 @@
   border-radius: 1rem;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
+.ticket-card:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
+.ticket-card-selected {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  border: 2px solid #6c63ff;
+}
+.ticket-card-details {
+  min-width: 750px;
+  margin: 20px auto;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
 
 .ticket-delete-icon {
   color: red;
@@ -66,7 +83,7 @@
   color: #666;
 }
 
-.ticket-proceed-btn {
+.ticket-see-details-btn {
   background-color: #6c63ff;
   border: none;
   font-weight: bold;
@@ -75,7 +92,13 @@
   transition: background-color 0.2s ease;
 }
 
-.ticket-proceed-btn:hover {
+.ticket-see-details-btn.selected {
+  background-color: transparent;
+  border: 2px solid #6c63ff;
+  color: #6c63ff;
+}
+
+.ticket-see-details-btn:hover {
   background-color: #574fd3;
 }
 
@@ -168,6 +191,19 @@
   color: #4c44c6;                /* Hover stroke color */
   cursor: pointer;
 }
+
+.seat-orange-icon path {
+  color: #ff7a00;               /* Stroke color or fallback */
+  fill: #ffe0cc !important;     /* Light orange fill */
+  stroke-width: 2px !important; /* Outline thickness */
+}
+
+.seat-orange-icon:hover path {
+  fill: #ff9c47 !important;     /* Brighter orange on hover */
+  color: #cc5c00;               /* Darker stroke on hover */
+  cursor: pointer;
+}
+
 .seat-container {
   z-index: 10;
 }

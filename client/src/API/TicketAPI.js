@@ -20,6 +20,21 @@ async function getUserReservations() {
     }
 }
 
+async function getReservationById(reservationId) {
+    let response = await fetch(URL + `/${reservationId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+    });
+    if (response.ok) {
+        const t = await response.json();
+        return t;
+    } else {
+        const errDetail = await response.json();
+        throw errDetail.message;
+    }
+}
 
-
-export default { getUserReservations };
+export default { getUserReservations, getReservationById };

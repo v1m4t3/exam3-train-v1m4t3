@@ -213,6 +213,22 @@ app.get('/api/reservations/:reservationId', isLoggedIn,
       const reservationDetails = await trainDao.getReservationDetailsByReservationIdAndUserId(reservationId, req.user.id);
       const availableSeatsInCar = await trainDao.getInfoSeatsByTrainIdAndCarIdForNewReservation(req.user.id, reservationDetails.trainId, reservationDetails.carId);
 
+      const seats = availableSeatsInCar.map((s) => ({ 
+        seatId: s.idSeat, 
+        seatNumber: s.seatNumber,
+        seatPrice: s.price,
+        seatStatus: s.isBooked 
+          ? (s.isLoggedUserReserved ? 'orange' : 'red') 
+          : 'green'
+      }));
+
+      const reservedSeatIds = reservationDetails.seats.map(s => s.seatId); 
+      seats.forEach(s => { if(reservedSeatIds.includes(s.seatId)) s.seatStatus = 'purple'; });
+      
+      const seatCounts = seats.reduce((acc, seat) => {
+        acc[seat.seatStatus] = (acc[seat.seatStatus] || 0) + 1;
+        return acc;
+      }, {});
       const result = {
         reservationId: reservationDetails.reservationId,
         dateIssued: dayjs(reservationDetails.dateIssued).format('YYYY-MM-DD'),
@@ -226,16 +242,15 @@ app.get('/api/reservations/:reservationId', isLoggedIn,
         trainDate: dayjs(reservationDetails.trainDate).format('YYYY-MM-DD'),
         carId: reservationDetails.carId,
         carName: reservationDetails.carName,
-        seats: availableSeatsInCar.map((s) => ({ 
-          seatId: s.idSeat, 
-          seatNumber: s.seatNumber,
-          seatPrice: s.price,
-          seatStatus: s.isBooked ? s.isLoggedUserReserved ? 'orange' : 'red' : 'green'
-        }))
-      };
-      const reservedSeatIds = reservationDetails.seats.map(s => s.seatId);
 
-      result.seats.forEach(s => { if(reservedSeatIds.includes(s.seatId)) s.seatStatus = 'purple'; });
+        purpleSeats: seatCounts.purple || 0,
+        orangeSeats: seatCounts.orange || 0,
+        redSeats: seatCounts.red || 0,
+        greenSeats: seatCounts.green || 0,
+        
+        seats: seats,
+      };
+      
 
       res.json(result);
     } catch(err) {
