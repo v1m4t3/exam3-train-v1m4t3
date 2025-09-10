@@ -50,11 +50,14 @@ CREATE TABLE IF NOT EXISTS "seats" (
 INSERT INTO "users" (email, name, surname, hash, salt, secret) VALUES ('harry@test.com','Harry', 'Potter','5fa1ee21b53713031055d12167f61eb5490e7a396f8d7d267afccddd1db6e044','99204c03b9203056fb7cd8861aeaf412','LXBSMDTMSP2I5XFXIYRGFVWSFI');
 INSERT INTO "users" (email, name, surname, hash, salt, secret) VALUES ('luigi@test.it', 'Luigi', 'Tocco','82839cff73db80b35f6a23d82cb6e562a4c343b70e05d7a84eefb9f68a58c484','bbc12e4d81dd2c645b4929e25c471d55','LXBSMDTMSP2I5XFXIYRGFVWSFI');
 
-INSERT INTO "trains" (trainNumber, departureStation, departureTime, arrivalStation, arrivalTime, date) VALUES ('T123','Turin', '2024-07-01 08:00:00','Milan','2024-07-01 10:00:00','2024-07-01');
+INSERT INTO "trains" (id, trainNumber, departureStation, departureTime, arrivalStation, arrivalTime, date) VALUES (1,'T123','Turin','2024-07-15 08:00:00','Lecce','2024-07-15 23:30:00','2024-07-15');
+INSERT INTO "trains" (id, trainNumber, departureStation, departureTime, arrivalStation, arrivalTime, date) VALUES (2, 'T456','Turin','2024-08-01 08:00:00','Milan','2024-08-01 10:00:00','2024-08-01');
+INSERT INTO "trains" (id, trainNumber, departureStation, departureTime, arrivalStation, arrivalTime, date) VALUES (3, 'T789','Turin','2024-08-15 08:00:00','Naples','2024-08-15 10:00:00','2024-08-15');
 
-INSERT INTO "cars" (carName) VALUES ('first class');
-INSERT INTO "cars" (carName) VALUES ('second class');
-INSERT INTO "cars" (carName) VALUES ('economy class');
+
+INSERT INTO "cars" (id, carName) VALUES (1, 'first class');
+INSERT INTO "cars" (id, carName) VALUES (2, 'second class');
+INSERT INTO "cars" (id, carName) VALUES (3, 'economy class');
 
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('1A', 50.0, 1, 1);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('1B', 50.0, 1, 1);
@@ -64,7 +67,7 @@ INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('3A', 50.0, 1, 1
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('3B', 50.0, 1, 1);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('4A', 50.0, 1, 1);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('4B', 50.0, 1, 1);
-INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('5A', 50.0, 1, 1);
+INSERT INTO "seats" (seatNumber, price, isBusy, trainId, carId, reservationId) VALUES ('5A', 50.0, 1, 1, 1, 4);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('5B', 50.0, 1, 1);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('6A', 50.0, 1, 1);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('6B', 50.0, 1, 1);
@@ -104,7 +107,7 @@ INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('8C', 30.0, 1, 2
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('9A', 30.0, 1, 2);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('9B', 30.0, 1, 2);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('9C', 30.0, 1, 2);
-INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('10A', 30.0, 1, 2);
+INSERT INTO "seats" (seatNumber, price, isBusy, trainId, carId, reservationId) VALUES ('10A', 30.0, 1, 1, 2, 3);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('10B', 30.0, 1, 2);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('10C', 30.0, 1, 2);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('11A', 30.0, 1, 2);
@@ -125,8 +128,8 @@ INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('15C', 30.0, 1, 
 
 
 
-INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('1A', 20.0, 1, 3);
-INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('1B', 20.0, 1, 3);
+INSERT INTO "seats" (seatNumber, price, isBusy, trainId, carId, reservationId) VALUES ('1A', 20.0, 1, 1, 3, 5);
+INSERT INTO "seats" (seatNumber, price, isBusy, trainId, carId, reservationId) VALUES ('1B', 20.0, 1, 1, 3, 5);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('1C', 20.0, 1, 3);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('1D', 20.0, 1, 3);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('2A', 20.0, 1, 3);
@@ -141,10 +144,10 @@ INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('4A', 20.0, 1, 3
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('4B', 20.0, 1, 3);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('4C', 20.0, 1, 3);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('4D', 20.0, 1, 3);
-INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('5A', 20.0, 1, 3);
-INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('5B', 20.0, 1, 3);
-INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('5C', 20.0, 1, 3);
-INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('5D', 20.0, 1, 3);
+INSERT INTO "seats" (seatNumber, price, isBusy, trainId, carId, reservationId) VALUES ('5A', 20.0, 1, 1, 3, 1);
+INSERT INTO "seats" (seatNumber, price, isBusy, trainId, carId, reservationId) VALUES ('5B', 20.0, 1, 1, 3, 2);
+INSERT INTO "seats" (seatNumber, price, isBusy, trainId, carId, reservationId) VALUES ('5C', 20.0, 1, 1, 3, 2);
+INSERT INTO "seats" (seatNumber, price, isBusy, trainId, carId, reservationId) VALUES ('5D', 20.0, 1, 1, 3, 2);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('6A', 20.0, 1, 3);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('6B', 20.0, 1, 3);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('6C', 20.0, 1, 3);
@@ -161,10 +164,10 @@ INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('9A', 20.0, 1, 3
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('9B', 20.0, 1, 3);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('9C', 20.0, 1, 3);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('9D', 20.0, 1, 3);
-INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('10A', 20.0, 1, 3);
-INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('10B', 20.0, 1, 3);
-INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('10C', 20.0, 1, 3);
-INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('10D', 20.0, 1, 3);
+INSERT INTO "seats" (seatNumber, price, isBusy, trainId, carId, reservationId) VALUES ('10A', 20.0, 1, 1, 3, 1);
+INSERT INTO "seats" (seatNumber, price, isBusy, trainId, carId, reservationId) VALUES ('10B', 20.0, 1, 1, 3, 1);
+INSERT INTO "seats" (seatNumber, price, isBusy, trainId, carId, reservationId) VALUES ('10C', 20.0, 1, 1, 3, 1);
+INSERT INTO "seats" (seatNumber, price, isBusy, trainId, carId, reservationId) VALUES ('10D', 20.0, 1, 1, 3, 1);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('11A', 20.0, 1, 3);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('11B', 20.0, 1, 3);
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('11C', 20.0, 1, 3);
@@ -199,6 +202,10 @@ INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('18C', 20.0, 1, 
 INSERT INTO "seats" (seatNumber, price, trainId, carId) VALUES ('18D', 20.0, 1, 3);
 
 
-
+INSERT INTO "reservations" (id, dateIssued, totalPrice, userId) VALUES (1, '2024-06-20', 100.0, 1);
+INSERT INTO "reservations" (id, dateIssued, totalPrice, userId) VALUES (2, '2024-06-21', 60.0, 2);
+INSERT INTO "reservations" (id, dateIssued, totalPrice, userId) VALUES (3, '2024-06-22', 30.0, 1);
+INSERT INTO "reservations" (id, dateIssued, totalPrice, userId) VALUES (4, '2024-06-23', 50.0, 1);
+INSERT INTO "reservations" (id, dateIssued, totalPrice, userId) VALUES (5, '2024-06-24', 40.0, 1);
 
 COMMIT;
