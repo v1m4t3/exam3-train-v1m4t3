@@ -1,0 +1,173 @@
+.ticket-card {
+  max-width: 750px;
+  margin: 20px auto;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.ticket-delete-icon {
+  color: red;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+.ticket-delete-icon:hover {
+  
+  transform: scale(1.1); /* effetto leggero al passaggio */
+}
+.ticket-header {
+  display: flex;
+  align-items: center;
+  gap: 5.5rem; /* spazio automatico tra testo e icona */
+}
+.ticket-id {
+  font-size: 1.5rem;
+  font-weight: 600;
+  /* color: #6c63ff; */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding-bottom: 0.5rem;
+}
+
+.ticket-date-buy {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: gray;
+  margin-left: auto; /* spinge la data a destra */
+}
+
+.ticket-station-name {
+  font-size: 1.3rem;
+  color: #555;
+}
+
+.ticket-station-code {
+  font-size: 1.9rem;
+  font-weight: bold;
+  color: #ffb007;
+
+  /* color: #222; */
+}
+
+.ticket-time {
+  font-size: 1.1rem;
+  color: #888;
+}
+
+.ticket-train-number {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #6c63ff;
+}
+
+.ticket-duration {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.ticket-proceed-btn {
+  background-color: #6c63ff;
+  border: none;
+  font-weight: bold;
+  padding: 0.5rem 2rem;
+  border-radius: 50px;
+  transition: background-color 0.2s ease;
+}
+
+.ticket-proceed-btn:hover {
+  background-color: #574fd3;
+}
+
+/* linea centrale */
+.ticket-dotted-line-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.ticket-dot-end {
+  width: 8px;
+  height: 8px;
+  background-color: #6c63ff;
+  border-radius: 50%;
+  margin: 0 8px;
+}
+
+.ticket-circle-center {
+  width: 50px;
+  height: 50px;
+  background-color: #fff;
+  border: 5px solid #6c63ff;
+  border-radius: 60%;
+}
+
+.ticket-separator {
+  flex-grow: 1;
+  height: 2px;
+  background-image: repeating-linear-gradient(
+    to right,
+    #6c63ff 0px,
+    #6c63ff 2px,
+    transparent 2px,
+    transparent 6px
+  );
+}
+
+.card-car-button {
+  color: #6c63ff;
+  border: 2px solid #6c63ff;
+  background-color: transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.card-car-button:hover {
+  background-color: #0a56c9;
+  color: white;
+  border-color: #6c63ff;
+}
+
+.card-car-button.selected {
+  background-color: #6c63ff;
+  color: white;
+ 
+}
+
+.seat-red-icon path {
+  color: #D32F2F;               
+  fill: #FFCDD2 !important; 
+  stroke-width: 2px !important;          
+}
+
+.seat-red-icon:hover path {
+  fill: #FF8A80 !important; 
+  color: #B71C1C;               
+  cursor: pointer;
+}
+
+.seat-green-icon path {
+  color: #388E3C;               
+  fill: #C8E6C9 !important; 
+  stroke-width: 2px !important;          
+}
+
+.seat-green-icon:hover path {
+  fill: #81C784 !important; 
+  color: #1B5E20;;               
+  cursor: pointer;
+}
+.seat-indigo-icon path {
+  color: #6c63ff;                /* Stroke color or fallback */
+  fill: #d6d4ff !important;      /* Light indigo fill */
+  stroke-width: 2px !important;  /* Thickness of the outline */
+}
+
+.seat-indigo-icon:hover path {
+  fill: #9a86fd !important;      /* Hover fill (slightly brighter) */
+  color: #4c44c6;                /* Hover stroke color */
+  cursor: pointer;
+}
+.seat-container {
+  z-index: 10;
+}

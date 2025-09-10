@@ -3,17 +3,18 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import { useEffect, useState } from 'react';
 import { Col, Container, Row, Navbar, Button, Spinner, Alert } from 'react-bootstrap';
 import { Routes, Route, Outlet, Link, Navigate, useNavigate } from 'react-router';
-import './App.css';
 
 import { Layout } from './components/LayoutComponents.jsx';
 import { DefaultRoute } from './components/DefaultRouteComponents.jsx';
-import { ReservationRoute } from './components/ReservationRouteComponents.jsx';
+import { TrainsRoute } from './components/TrainsRouteComponents.jsx';
+import { ReservationsRoute } from './components/ReservationsRouteComponents.jsx';
 import { LoginWithTotp } from './components/AuthComponents.jsx';
 
 import API from './API/AuthenticationAPI.js';
 import TrainAPI from './API/TrainAPI.js';
 import { LoginForm, TotpForm } from './components/AuthComponents.jsx';
-
+import { use } from 'react';
+import './App.css';
 
 
 
@@ -30,6 +31,8 @@ function App() {
   const [user, setUser ] = useState(undefined);
   const [loggedIn, setLoggedIn] = useState(false);
   const [loggedInTotp, setLoggedInTotp] = useState(false);
+  
+  const navigate = useNavigate();
 
   function handleError(err) {
     console.log('handleError: ',err);
@@ -76,6 +79,7 @@ function App() {
         setUser(user);
         if (user.isTotp)
           setLoggedInTotp(true);
+
       } catch(err) {
         // NO need to do anything: user is simply not yet authenticated
         //handleError(err);
@@ -102,9 +106,17 @@ function App() {
   return (
     <Routes>
       <Route path='/' element={<Layout user={user} loggedIn={loggedIn} logout={doLogOut} loggedInTotp={loggedInTotp} />}>
-          <Route index element={ <ReservationRoute listOfTrains={trains}
-          initialLoading={initialLoading} errorMsg={errorMsg} setErrorMsg={setErrorMsg}  /> } />
+          <Route index element={ 
+              <TrainsRoute loggedIn={loggedIn} listOfTrains={trains}
+                            initialLoading={initialLoading} 
+                            errorMsg={errorMsg} setErrorMsg={setErrorMsg}  /> } />
+          <Route path='/my-reservations' element={ loggedIn ?
+              <ReservationsRoute user={user} loggedIn={loggedIn} loggedInTotp={loggedInTotp} 
+                                listOfTrains={trains}
+                                initialLoading={initialLoading} errorMsg={errorMsg} setErrorMsg={setErrorMsg}  /> :
+                          <Navigate to='/' replace /> } />
       </Route>
+    
       <Route path='/login' element={ 
          <LoginWithTotp loginSuccessful={loginSuccessful} loggedIn={loggedIn} user={user} 
            loggedInTotp={loggedInTotp} setLoggedInTotp={setLoggedInTotp} />} />

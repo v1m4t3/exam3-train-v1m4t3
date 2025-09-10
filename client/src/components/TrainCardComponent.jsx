@@ -1,13 +1,11 @@
 import { Alert, Card, Container, Button, Row, Col, Popover, OverlayTrigger } from 'react-bootstrap';
 import '../styles/TrainCard.css';
+import '../styles/Train.css';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
-import { use } from 'react';
-import { Train } from '../Models/TrainModels';
 import TrainAPI from '../API/TrainAPI.js';
 import { capitalizeWords } from '../utils.js';
 
-import { Fragment } from 'react';
 import SeatIcon from '../assets/icons/seatIcon.svg?react';
 
 function TrainCard({ train }) {
@@ -225,7 +223,6 @@ const CarSeatsInfo = ({ carSeats, totalSeats, availableSeats, occupiedSeats }) =
 };
 
 
-import '../styles/Train.css';
 
 function groupSeatsByRow(seats) {
   const rows = {};

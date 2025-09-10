@@ -16,7 +16,7 @@ function TotpForm(props) {
       .then(() => {
         setErrorMessage('');
         props.totpSuccessful();
-        navigate('/');
+        navigate('/my-reservations', { replace: true });
       })
       .catch(() => {
         setErrorMessage('Wrong code, please try again');
@@ -78,7 +78,7 @@ function TotpForm(props) {
                   </Button>
                   <Button
                     variant="secondary"
-                    onClick={() => navigate('/')}
+                    onClick={() => navigate('/my-reservations', { replace: true })}
                   >
                     Cancel
                   </Button>
@@ -182,11 +182,13 @@ function LoginForm(props) {
                     type='submit'
                     style={{ backgroundColor: "#6c63ff", border: "none" }}
                   >
-                    <i className="bi bi-box-arrow-in-right me-2"></i> Login
+                    <i className="bi bi-box-arrow-in-right me-2"></i> 
+                    Login
                   </Button>
+
                   <Button
                     variant='secondary'
-                    onClick={() => navigate('/')}
+                    onClick={() => navigate('/', { replace: true })}
                   >
                     Cancel
                   </Button>
@@ -216,12 +218,12 @@ function LoginWithTotp(props) {
   if (props.loggedIn) {
     if (props.user.canDoTotp) {
         if (props.loggedInTotp) {
-        return <Navigate replace to='/' />;
+        return <Navigate replace to='/my-reservations' />;
       } else {
         return <TotpForm totpSuccessful={() => props.setLoggedInTotp(true)} />;
       }
     } else {
-      return <Navigate replace to='/' />;
+      return <Navigate replace to='/my-reservations' />;
     }
   } else {
     return <LoginForm loginSuccessful={props.loginSuccessful} />;

@@ -50,7 +50,7 @@ function NavigationBar(props) {
     </Navbar>
 
   {/* Spacer to avoid content being hidden behind the fixed navbar */}
-    <div style={{ height: '56px' }}></div> 
+    <div style={{ height: '65px' }}></div> 
     </>
   );
 }

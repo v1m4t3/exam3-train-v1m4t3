@@ -1,0 +1,35 @@
+.btn-new-reservation {
+  background-color: #ff9800;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-new-reservation:hover {
+  background-color: #e68900;
+  color: #fff3e0;
+}
+
+
+.btn-new-reservation:active {
+  background-color: #cc7a00;
+}
+
+/* Stato selezionato */
+.btn-new-reservation.selected {
+  color: #e68900;
+  background-color: #fff3e0;
+  border: 3px solid #ff9800;
+}
+
+.train-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* opzionale: spazio tra le card */
+  padding: 1rem 0;
+}

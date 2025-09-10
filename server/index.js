@@ -129,6 +129,12 @@ app.get('/api/trains/:trainId/cars',
     check('trainId').isInt({min:1}).withMessage('must be a positive integer')
   ],
   function(req, res) {
+
+    const errors = validationResult(req).formatWith(errorFormatter);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
     const trainId = req.params.trainId;
     console.log(`DEBUG: cars list request for train ${trainId}`);
     trainDao.getExistingCarsByTrainId(trainId)
@@ -143,6 +149,11 @@ app.get('/api/trains/:trainId/cars/:carId/seats',
     check('carId').isInt({min:1}).withMessage('must be a positive integer')
   ],
   function(req, res) {
+    const errors = validationResult(req).formatWith(errorFormatter);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
     const trainId = req.params.trainId;
     const carId = req.params.carId;
     console.log(`DEBUG: seats list request for train ${trainId} and car ${carId}`);
@@ -152,11 +163,56 @@ app.get('/api/trains/:trainId/cars/:carId/seats',
   }
 );
 
+/*** Reservation APIs ***/
+// Get info about seats for a new reservation for a logged-in user
+app.get('/api/reservation/trains/:trainId/cars/:carId/seats', isLoggedIn, 
+  [
+    check('trainId').isInt({min:1}).withMessage('must be a positive integer'),
+    check('carId').isInt({min:1}).withMessage('must be a positive integer'),
+  ],
+  function(req, res) {
+    const errors = validationResult(req).formatWith(errorFormatter);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
 
+    const trainId = req.params.trainId;
+    const carId = req.params.carId;
+    console.log(`DEBUG: seats list request for train ${trainId} and car ${carId}`);
+    trainDao.getInfoSeatsByTrainIdAndCarIdForNewReservation(req.user.id, trainId, carId)
+    .then((seats) => {res.json(seats);})
+    .catch((err) => {res.status(500).json(err);});
+  });
 
+// Get all reservations of the logged-in user
+app.get('/api/reservations', isLoggedIn, 
+  function(req, res) {
 
+    console.log(`DEBUG: reservations list request for user ${req.user.id}`);
+    trainDao.getAllReservationsByUserId(req.user.id)
+    .then((reservations) => {res.json(reservations);})
+    .catch((err) => {res.status(500).json(err);});
+  }
+);
 
+// Get details of a specific reservation of the logged-in user
+app.get('/api/reservations/:reservationId', isLoggedIn, 
+  [
+    check('reservationId').isInt({min:1}).withMessage('must be a positive integer')
+  ],
+  function(req, res) {
+    const errors = validationResult(req).formatWith(errorFormatter);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
 
+    const reservationId = req.params.reservationId;
+    console.log(`DEBUG: reservation details request for reservation ${reservationId} and user ${req.user.id}`);
+    trainDao.getReservationDetailsByReservationIdAndUserId(reservationId, req.user.id)
+    .then((reservationDetails) => {res.json(reservationDetails);})
+    .catch((err) => {res.status(500).json(err);});
+  }
+);
 /*** Users APIs ***/
 
 function clientUserInfo(req) {
