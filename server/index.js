@@ -97,7 +97,10 @@ function isTotp(req, res, next) {
   return res.status(401).json({ error: 'Missing TOTP authentication'});
 }
 
-
+function isTotpOptional(req, res, next){
+  req.totp = req.session?.method === 'totp';
+  next();
+}
 
 /*** Utility Functions ***/
 
@@ -257,6 +260,99 @@ app.get('/api/reservations/:reservationId', isLoggedIn,
       console.error(err.message);
 
       res.status(500).json(err);
+    }
+  
+  }
+);
+
+// delete a specific reservation of the logged-in user
+app.delete('/api/reservations/:reservationId', isLoggedIn, 
+  [
+    check('reservationId').isInt({min:1}).withMessage('must be a positive integer')
+  ],
+  async function(req, res) {
+    const errors = validationResult(req).formatWith(errorFormatter);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
+    const reservationId = req.params.reservationId;
+    console.log(`DEBUG: reservation delete request for reservation ${reservationId} and user ${req.user.id}`);
+
+    try {
+      const result = await trainDao.deleteReservationByReservationIdAndUserId(reservationId, req.user.id);
+      if(result) 
+        res.status(204).end();
+      else 
+        res.status(404).json({ error: `Cannot find reservation ${reservationId}`});
+    } catch(err) {
+      console.error(err.message);
+
+      res.status(500).json(err);
+    }
+  
+  }
+);
+
+// create a new reservation for the logged-in user
+app.post('/api/reservations', 
+  isLoggedIn, 
+  isTotpOptional,
+  [
+    check('trainId').isInt({min:1}).withMessage('must be a positive integer'),
+    check('carId').isInt({min:1}).withMessage('must be a positive integer'),
+    check('seatIds').isArray({min:1}).withMessage('must be a non-empty array'),
+    check('seatIds.*').isInt({min:1}).withMessage('each seatId must be a positive integer'),
+  ],
+  async function(req, res) {
+    const errors = validationResult(req).formatWith(errorFormatter);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
+    const userId = req.user.id;
+    const { trainId, carId, seatIds } = req.body;
+    console.log(`DEBUG: new reservation request for user ${userId}, train ${trainId}, car ${carId}, seats ${seatIds}`);
+    
+    //ADD CONTROLS ON THE USER INPUT
+
+
+    // for simplicity, we only have train with id=1
+    if(trainId != 1){
+      return res.status(400).json({ error: 'Only train 1 is available for reservations' });
+    }
+    // the user must have done TOTP authentication to book seats in first class cars (carId < 2)
+    if(!req.totpVerified && carId < 2) {
+      return res.status(401).json({ error: 'TOTP authentication required to book seats in first class cars'});
+    }
+
+
+    try {
+      const reservationId = await trainDao.createNewReservation(userId, trainId, carId, seatIds);
+      res.status(201).json({ reservationId: reservationId });
+    } catch(err) {
+      console.error(err.type);
+      console.error(err.message);
+      if(err.type === 'notfound_seats') {
+        return res.status(404).json({ 
+          type: err.type,
+          error: err.message });
+      }
+      if(err.type === 'invalid_seats') {
+        return res.status(400).json({ 
+          type: err.type,
+          error: err.message });
+      }
+      if(err.type === 'occupied_seats') {
+        return res.status(409).json({ 
+          type: err.type,
+          error: 'Some seats are already occupied',
+          occupiedSeats: err.occupiedSeats });
+      }
+
+      console.error('Internal Error: ' + err);
+      res.status(500).json({ error: 'Internal Server Error' });
+
     }
   
   }

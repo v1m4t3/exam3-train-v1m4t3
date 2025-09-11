@@ -187,7 +187,6 @@ exports.getAllReservationsByUserId = (userId) => {
     });
 };
 
-//non usare è rottaaaaaaaaaaaaaaaaaaaaaa
 exports.getReservationDetailsByReservationIdAndUserId = (reservationId, userId) => {
 
     return new Promise((resolve, reject) => {
@@ -247,3 +246,109 @@ exports.getReservationDetailsByReservationIdAndUserId = (reservationId, userId) 
         });
     });
 };
+
+exports.deleteReservationByReservationIdAndUserId = (reservationId, userId) => {
+
+    return new Promise((resolve, reject) => {
+        const sqlCheck = 'SELECT * FROM reservations WHERE id = ? AND userId = ?';
+        db.get(sqlCheck, [reservationId, userId], (err, row) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            if (row === undefined) {
+                resolve({'Reservation not found for user': {reservationId, userId}});
+                return;
+            }
+
+            const sqlDeleteSeats = 'UPDATE seats SET isBusy = 0, reservationId = NULL WHERE reservationId = ?';
+            db.run(sqlDeleteSeats, [reservationId], function(err) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                const sqlDeleteReservation = 'DELETE FROM reservations WHERE id = ?';
+                db.run(sqlDeleteReservation, [reservationId], function(err) {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    resolve({'Reservation deleted successfully': reservationId});
+                });
+            });
+        });
+    });
+};
+
+exports.createNewReservation = (userId, trainId, carId, seatIds) => {
+
+    return new Promise((resolve, reject) => {
+        // Step 1: Check if all requested seats are available
+        const placeholders = seatIds.map(() => '?').join(',');
+        const sqlCheckSeats = `SELECT trainId, carId, id AS seatId, seatNumber, isBusy, price FROM seats WHERE id IN (${placeholders})`;
+
+        db.all(sqlCheckSeats, [...seatIds], (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            
+            if (rows.length !== seatIds.length) {
+                return reject({type: 'notfound_seats', 
+                                message: 'No seats found for the provided IDs'
+                            });
+            }
+            
+            console.log('Selected seats:', rows);
+
+            // Check if all seats belong to the specified train and car
+            const allInTheSelectedTrain = rows.every(seat => seat.trainId === trainId);
+            const allInTheSelectedCar = rows.every(seat => seat.carId === carId);
+            if (!allInTheSelectedTrain || !allInTheSelectedCar) {
+
+                console.log('Some seats do not belong to the specified train or car');
+                return reject({type: 'invalid_seats', 
+                                message: 'All selected seats must belong to the specified train and car' 
+                            });
+            }
+
+            console.log('All seats belong to the specified train and car');
+
+            // Check if all seats are available otherwise return which ones are occupied
+            const allAvailable = rows.every(seat => seat.isBusy === 0);
+            
+            if (!allAvailable) {
+                const occupiedSeats = rows.filter(seat => seat.isBusy !== 0).map(s => ({ id: s.seatId, seatNumber: s.seatNumber }));
+                return reject({ type: 'occupied_seats', occupiedSeats });
+            }
+
+            // Calculate total price
+            const totalPrice = rows.reduce((sum, seat) => sum + seat.price, 0);
+            const seatBooked = rows.map(seat => ({ seatId: seat.seatId, seatNumber: seat.seatNumber, price: seat.price }));
+            console.log(`Total price for reservation: ${totalPrice}`);
+
+            // Create a new reservation
+            const sqlInsertReservation = 'INSERT INTO reservations (userId, dateIssued, totalPrice) VALUES (?, ?, ?)';
+            const currentDate = dayjs().format('YYYY-MM-DD');
+            db.run(sqlInsertReservation, [userId, currentDate, totalPrice], function(err) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                const reservationId = this.lastID;
+
+                // Step 4: Update seats to mark them as busy and link to the new reservation
+                const sqlUpdateSeats = `UPDATE seats SET isBusy = 1, reservationId = ? WHERE id IN (${placeholders})`;
+                db.run(sqlUpdateSeats, [reservationId, ...seatIds], function(err) {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    resolve({type: 'successfully_created', data: {reservationId, totalPrice, trainId, carId, seatBooked}});
+                });
+            });
+        });
+    });
+};
+
