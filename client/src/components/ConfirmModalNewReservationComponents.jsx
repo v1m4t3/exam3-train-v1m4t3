@@ -6,34 +6,40 @@ import TicketAPI from "../API/TicketAPI.js";
 import {NewReservation} from "../Models/TicketModels.js";
 
 function ConfirmModalNewReservation({showConfirmModal, setShowConfirmModal, trainInfo, 
-                                        selectedClass, selectedSeatsInfo, setAlertNewReservation}) {
+                                        selectedClass, selectedSeatsInfo, setAlertNewReservation, 
+                                        setIsDirtyShowDetails, setConflictSeatsList}) {
  const [loading, setLoading] = useState(false); 
 
-  const handleSubmit = () => {
-    console.log("DEBUG: " + JSON.stringify(trainInfo, null, 2));
-    console.log("DEBUG: " + trainInfo.id);
-    console.log("DEBUG: " + selectedClass.carId);
-    console.log("DEBUG: " + selectedSeatsInfo.map(seat => seat.seatId));
 
-    setLoading(true);
-    // setLoading(false);
-    TicketAPI.createNewReservation(
-                new NewReservation(trainInfo.id, 
-                    selectedClass.carId, 
-                    selectedSeatsInfo.map(seat => seat.seatId)
-                )).then((res) => {
-                    setAlertNewReservation(res);
-                }).catch((error) => {
-                    // Handle errors (e.g., show an error message)
-                    
-                }).finally(() => {
-                    setShowConfirmModal(false);
-                    setLoading(false);
-                });
 
+  const handleSubmit = async () => {
+  setLoading(true);
+  try {
+    const data = await TicketAPI.createNewReservation(
+      new NewReservation(
+        trainInfo.id,
+        selectedClass.carId,
+        selectedSeatsInfo.map(seat => seat.seatId)
+      )
+    );
+    setAlertNewReservation(data);
+  } catch (errorData) {
+
+    if (errorData?.type === 'occupied_seats') {
+      const seatList = errorData.occupiedSeats.map(seat => seat.id);
+      console.log("Conflict seats: ", seatList);
+      setConflictSeatsList(seatList);
+    } else {
+      console.error("Unknown Error creating reservation:", errorData);
+    }
+  } finally {
+    setShowConfirmModal(false);
+    setIsDirtyShowDetails(true);
+    setLoading(false);
   }
+};
 
-    // Simulated backend call
+
 
   return (
     <Modal

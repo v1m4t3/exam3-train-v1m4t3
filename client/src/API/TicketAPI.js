@@ -71,13 +71,11 @@ async function createNewReservation(reservation) {
         credentials: 'include',
         body: JSON.stringify(reservation),
     });
+    const data = await response.json();
     if (response.ok) {
-        const t = await response.json();
-        return t;
+        return data;
     } else {
-        //TODO: FIX ERROR FOR SEATS
-        const errDetail = await response.json();
-        throw errDetail.message;
+        throw data;
     }
 }
 

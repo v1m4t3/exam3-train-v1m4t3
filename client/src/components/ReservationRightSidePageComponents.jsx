@@ -24,6 +24,7 @@ function RightSide(props) {
             reservationDetails, setReservationDetails, setDirty} = props;
 
     const [alertNewReservation, setAlertNewReservation] = useState(null);
+    const [conflictSeatsList, setConflictSeatsList] = useState([]);
     const [errorMessageNewReservation, setErrorMessageNewReservation] = useState('');
 
     useEffect(() => {
@@ -31,10 +32,22 @@ function RightSide(props) {
         setDirty(true);
         const timer = setTimeout(() => {
           setAlertNewReservation(null);
-        }, 3000);
+        }, 7000);
         return () => clearTimeout(timer);
       }
     }, [alertNewReservation]);
+
+    useEffect(() => {
+      if (conflictSeatsList.length > 0) {
+        console.log("Conflict seats list updated, starting timer to clear it after 7 seconds");
+        const timer = setTimeout(() => {
+          console.log("Clearing conflict seats list after 7 seconds");
+          setConflictSeatsList([]);
+        }, 7000); // 7000 ms = 7 secondi
+
+        return () => clearTimeout(timer); // pulizia del timer se cambia la lista
+      }
+    }, [conflictSeatsList]);
 
     return (
        <>
@@ -45,6 +58,11 @@ function RightSide(props) {
         {alertNewReservation &&(
           <Alert variant="success" className="alert-fixed-top" onClose={() => {setAlertNewReservation(false); setErrorMessageNewReservation('')}} dismissible >
               Reservation #{alertNewReservation?.reservationId.data.reservationId} confirmed successfully! 
+          </Alert>
+        )}
+        {conflictSeatsList.length > 0 &&(
+          <Alert variant="danger" className="alert-fixed-top" >
+            The following seats are already occupied: {conflictSeatsList.join(", ")}
           </Alert>
         )}
 
@@ -69,7 +87,11 @@ function RightSide(props) {
             ) : (
               props.listOfTrains.map((train, index) => (
                 <TrainCardNewReservation key={index} train={train} 
-                          loggedInTotp={loggedInTotp} setAlertNewReservation={setAlertNewReservation} />
+                          loggedInTotp={loggedInTotp} 
+                          setAlertNewReservation={setAlertNewReservation} 
+                          setConflictSeatsList={setConflictSeatsList} 
+                          conflictSeatsList={conflictSeatsList}
+                        />
               ))
             )}
           </div>
@@ -84,7 +106,7 @@ function RightSide(props) {
 
 // ***** Ticket Card New Reservation Component ******
 
-function TrainCardNewReservation({ train, loggedInTotp, setAlertNewReservation }) {
+function TrainCardNewReservation({ train, loggedInTotp, setAlertNewReservation, conflictSeatsList, setConflictSeatsList }) {
 
   const [trainDetails, setTrainDetails] = useState(null);
   const [carDetails, setCarDetails] = useState(null);
@@ -98,6 +120,7 @@ function TrainCardNewReservation({ train, loggedInTotp, setAlertNewReservation }
   // Track selected seat IDs for the new reservation
   const [selectedSeatIds, setSelectedSeatIds] = useState([]);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isDirtyShowDetails, setIsDirtyShowDetails] = useState(false);
 
   const [showAlert, setShowAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -106,7 +129,7 @@ function TrainCardNewReservation({ train, loggedInTotp, setAlertNewReservation }
 
 
   useEffect(() => {
-    if (showDetails) {
+    if (showDetails ) {
       console.log("Showing details for train:", train);
 
       TrainAPI.getTrainCarsDetails(train.id)
@@ -120,8 +143,10 @@ function TrainCardNewReservation({ train, loggedInTotp, setAlertNewReservation }
             return;
           }
           console.log("Fetched cars:", fetchedCars);
+          setTrainDetails(train);
           setCarDetails(fetchedCars);
-          setInitialLoading(false); 
+          setIsDirtyShowDetails(false);
+          setInitialLoading(false);
         })
         
         .catch(err => {
@@ -150,11 +175,29 @@ function TrainCardNewReservation({ train, loggedInTotp, setAlertNewReservation }
   };
   const handleClassSelection = (car) => {
     setSelectedClass(car);
+    setIsDirtyShowDetails(true);
 
     console.log(" Selected class:", car);
-    // es: TrainAPI.getSeats(className).then(...);
 
-    TicketAPI.getInfoSeatsByTrainIdAndCarIdAndUserIdLoggedIn(train.id, car.carId)
+  };
+
+  const [startTimer, setStartTimer] = useState(false);
+  // timer to show the seat status in blue for 7 seconds
+  useEffect(() => {
+    let timer;
+    if (startTimer) {
+      timer = setTimeout(() => {
+        setIsDirtyShowDetails(true);
+        setStartTimer(false);
+      }, 7000); // Stop the timer after 7 seconds
+    }
+    return () => clearTimeout(timer);
+  }, [startTimer]);
+
+  // To get info about seats when selectedClass or isDirtyShowDetails changes
+  useEffect(() => {
+    if (isDirtyShowDetails && showDetails) {
+      TicketAPI.getInfoSeatsByTrainIdAndCarIdAndUserIdLoggedIn(trainDetails.id, selectedClass.carId)
       .then(seatsDetails => {
         console.log("Fetched seats details:", seatsDetails);
         if (seatsDetails.length === 0) {
@@ -166,6 +209,17 @@ function TrainCardNewReservation({ train, loggedInTotp, setAlertNewReservation }
           return;
         }
         console.log("Fetched seats details:", seatsDetails);
+        // Highlight conflict seats in blue 
+        if (conflictSeatsList.length > 0) {
+          console.log("Highlighting conflict seats in blue:", conflictSeatsList);
+          seatsDetails = seatsDetails.map(seat => ({
+            ...seat,
+            seatStatus: conflictSeatsList.includes(seat.seatId) ? 'blue' : seat.seatStatus
+          }));
+          console.log("Seats details after highlighting conflicts:", seatsDetails);
+          setStartTimer(true);
+          //setConflictSeatsList([]); // Clear conflict seats after highlighting
+        }
         setSeatsDetails(seatsDetails);
         setSelectedSeatIds([]);
         setSeatsLoading(false);
@@ -174,8 +228,11 @@ function TrainCardNewReservation({ train, loggedInTotp, setAlertNewReservation }
       .catch(err => {
         console.error("Error fetching seats details:", err);
       });
+      setIsDirtyShowDetails(false);
+    }
 
-  };
+
+  }, [isDirtyShowDetails]);
 
 
 
@@ -303,6 +360,8 @@ function TrainCardNewReservation({ train, loggedInTotp, setAlertNewReservation }
         selectedClass={selectedClass}
         selectedSeatsInfo={seatsDetails.filter(seat => selectedSeatIds.includes(seat.seatId))}
         setAlertNewReservation={setAlertNewReservation}
+        setIsDirtyShowDetails={setIsDirtyShowDetails}
+        setConflictSeatsList={setConflictSeatsList}
     />)}
 
     </>
@@ -333,7 +392,7 @@ const CarSeatsInfoNewReservation = ({seatsInfo, selectedSeatIds}) => {
   const counts = {
     yellow: effectiveSeatsStatuses.filter(s => s === 'yellow').length,
     orange: effectiveSeatsStatuses.filter(s => s === 'orange').length,
-    red: effectiveSeatsStatuses.filter(s => s === 'red').length,
+    red: effectiveSeatsStatuses.filter(s => s === 'red' || s === 'blue').length,
     green: effectiveSeatsStatuses.filter(s => s === 'green').length,
   };
   const totalSeats = seatsInfo.length;
@@ -750,7 +809,7 @@ function seatStatusToColor(status) {
       return 'Occupied by you in this reservation'; // purple
     case 'orange':
       return 'Occupied by you in another reservation'; // orange
-    case 'red':
+    case 'red' || 'blue':
       return 'Occupied by others'; // red
     case 'green':
       return 'Available seat'; // green

@@ -200,6 +200,18 @@
   cursor: pointer;
 }
 
+.seat-blue-icon path {
+  color: #0077cc;                /* Stroke color or fallback (blu scuro) */
+  fill: #cce5ff !important;      /* Light blue fill */
+  stroke-width: 2px !important;  /* Thickness of the outline */
+}
+
+.seat-blue-icon:hover path {
+  fill: #99ccff !important;      /* Hover fill (più brillante) */
+  color: #005fa3;                /* Hover stroke color (blu più intenso) */
+  cursor: pointer;
+}
+
 .seat-orange-icon path {
   color: #ff7a00;               /* Stroke color or fallback */
   fill: #ffe0cc !important;     /* Light orange fill */
