@@ -79,4 +79,21 @@ async function createNewReservation(reservation) {
     }
 }
 
-export default { getInfoSeatsByTrainIdAndCarIdAndUserIdLoggedIn, getUserReservations, getReservationById, createNewReservation };
+async function deleteReservationById(reservationId) {
+    let response = await fetch(URL + `/${reservationId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+    });
+    if (response.ok) {
+        return;
+    } else {
+        const errDetail = await response.json();
+        throw errDetail.message;
+    }
+}
+
+export default { getInfoSeatsByTrainIdAndCarIdAndUserIdLoggedIn, getUserReservations, 
+                    getReservationById, createNewReservation, deleteReservationById };

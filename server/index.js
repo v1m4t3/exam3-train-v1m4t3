@@ -98,7 +98,7 @@ function isTotp(req, res, next) {
 }
 
 function isTotpOptional(req, res, next){
-  req.totp = req.session?.method === 'totp';
+  req.totpVerified = req.session?.method === 'totp';
   next();
 }
 

@@ -6,10 +6,10 @@ import { capitalizeWords } from '../utils.js';
 import SeatIconSmall from '../assets/icons/seatIconSmall.svg?react';
 import { Button, Card, Col, Row} from 'react-bootstrap';
 import DottedLineWithEnds from './UtilsComponents.jsx';
-
+import TicketAPI from '../API/TicketAPI.js';
 
 function LeftSide(props) {
-    const { newReservation, setNewReservation, listOfReservations, selectedReservation, setSelectedReservation } = props;
+    const { newReservation, setNewReservation, listOfReservations, selectedReservation, setSelectedReservation, setDirty } = props;
 
     return (
        <>
@@ -22,7 +22,10 @@ function LeftSide(props) {
         </Button>
 
         {listOfReservations.map((reservation) => (
-          <TicketCard key={reservation.reservationId} ticket={reservation} selectedReservation={selectedReservation} setSelectedReservation={setSelectedReservation} newReservation={newReservation} setNewReservation={setNewReservation} />
+          <TicketCard key={reservation.reservationId} ticket={reservation} 
+                      selectedReservation={selectedReservation} setSelectedReservation={setSelectedReservation} 
+                      newReservation={newReservation} setNewReservation={setNewReservation} 
+                      setDirty={setDirty} />
         ))}
 
     </>
@@ -31,8 +34,27 @@ function LeftSide(props) {
 
 
 
+
+
+
+
 function TicketCard(props) {
-    const { ticket, selectedReservation, setSelectedReservation, newReservation, setNewReservation } = props;
+    const { ticket, selectedReservation, setSelectedReservation, newReservation, setNewReservation, setDirty } = props;
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    const handleDeleteReservation = (reservationId) => {
+      // Call the API to delete the reservation
+      TicketAPI.deleteReservationById(reservationId)
+          .then(() => {
+              // If successful, update the state to remove the reservation
+              setNewReservation(true);
+              setSelectedReservation(null);
+              setDirty(true);
+          })
+          .catch((error) => {
+              console.error("Error deleting reservation:", error);
+          });
+      }; 
 
     return (
         //check if the ticket is the selected one and apply a different style
@@ -53,7 +75,7 @@ function TicketCard(props) {
        </span> 
 
             <i className="bi bi-trash3-fill ticket-delete-icon ticket-id" role="button" title="Delete Ticket"
-                onClick={() => console.log("Delete clicked")} // <-- tua funzione
+                onClick={() => handleDeleteReservation(ticket.reservationId)}
             ></i>
        </div>
         <hr style={{ borderTop: '3px solid #ccc', margin: '1rem 0' }} />
