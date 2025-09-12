@@ -14,9 +14,10 @@ import { Button, Card, Col, Container, OverlayTrigger, Popover, Row, Tooltip } f
 import DottedLineWithEnds from './UtilsComponents.jsx';
 import { LeftSide } from './ReservationLeftSidePageComponents.jsx';
 import { RightSide } from './ReservationRightSidePageComponents.jsx';
+import TrainAPI from '../API/TrainAPI.js';
 
 function ReservationsRoute(props) {
-  const { user, loggedIn, loggedInTotp, listOfTrains, initialLoading, errorMsg, setErrorMsg } = props;
+  const { user, loggedIn, loggedInTotp, listOfTrains, setListOfTrains, initialLoading, setInitialLoading, errorMsg, setErrorMsg } = props;
 
   const [newReservation, setNewReservation] = useState(true);
   const [listOfReservations, setListOfReservations] = useState([]);
@@ -41,7 +42,20 @@ function ReservationsRoute(props) {
 
   useEffect(() => {
     if (newReservation) {
-      console.log('Starting a new reservation'); // Clear any previous error messages when starting a new reservation
+      TrainAPI.getAllTrains()
+        .then((trains) => {
+          console.log('Fetched trains:', trains);
+          setListOfTrains(trains);
+          setInitialLoading(false);
+          setReservationDetails(null);
+          setSelectedReservation(null);
+          setErrorMsg('');
+        })
+        .catch((error) => {
+          console.error('Error fetching trains:', error);
+          setErrorMsg('Error fetching trains: ' + error);
+        });
+
     }else if (selectedReservation) {
       console.log('Fetching details for reservation ID:', selectedReservation.reservationId);
       TicketAPI.getReservationById(selectedReservation.reservationId)
@@ -65,7 +79,8 @@ function ReservationsRoute(props) {
 
           <LeftSide newReservation={newReservation} setNewReservation={setNewReservation}
                     user={user} loggedIn={loggedIn} loggedInTotp={loggedInTotp}
-                    listOfReservations={listOfReservations} selectedReservation={selectedReservation} setSelectedReservation={setSelectedReservation} />
+                    listOfReservations={listOfReservations} selectedReservation={selectedReservation} setSelectedReservation={setSelectedReservation} 
+                    setDirty={setDirty} />
           
         </Col>
 
@@ -75,7 +90,7 @@ function ReservationsRoute(props) {
             <RightSide newReservation={newReservation} setNewReservation={setNewReservation} 
                        user={user} loggedIn={loggedIn} loggedInTotp={loggedInTotp}
                        listOfTrains={listOfTrains} initialLoading={initialLoading} errorMsg={errorMsg} setErrorMsg={setErrorMsg}
-                       reservationDetails={reservationDetails} setReservationDetails={setReservationDetails} />
+                       reservationDetails={reservationDetails} setReservationDetails={setReservationDetails} setDirty={setDirty} />
             
             
           </Row>

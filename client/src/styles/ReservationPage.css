@@ -1,0 +1,32 @@
+
+/* Contenitore a due colonne */
+.reservation-container {
+  display: flex;
+  height: 100vh;   /* tutta l’altezza dello schermo */
+  width: 100%;
+  overflow: hidden; /* impedisce la scrollbar globale */
+}
+
+/* Stile comune alle due pagine */
+.reservation-page {
+  flex: 1;                /* occupano 50% ciascuna */
+  overflow-y: auto;       /* scrollbar indipendente */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Pagina sinistra */
+.reservation-left {
+  background-color: #e3f2fd;
+}
+
+/* Pagina destra */
+.reservation-right {
+  background-color: #fff3e0;
+}
+
+/* Divisore centrale */
+.reservation-divider {
+  width: 2px;
+  background-color: #333;
+}

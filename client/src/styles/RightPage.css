@@ -1,0 +1,43 @@
+.submit-random-seats {
+  background-color: #6c63ff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white; /* se vuoi il colore del testo/icone bianco */
+  border: none; /* se vuoi togliere il bordo */
+  cursor: pointer; /* se vuoi che sembri cliccabile */
+}
+
+/* Smooth glassy modal look */
+.custom-confirm-modal .modal-content {
+  border-radius: 16px;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+}
+
+/* Remove default Bootstrap button focus */
+button:focus {
+  box-shadow: none !important;
+}
+
+/* Better spinner spacing */
+.spinner-border {
+  vertical-align: middle;
+}
+
+.alert-fixed-top {
+  position: fixed;
+  top: 45px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: auto;
+  max-width: 90%;
+}

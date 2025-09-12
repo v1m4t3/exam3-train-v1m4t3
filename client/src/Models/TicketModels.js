@@ -23,5 +23,9 @@ function Ticket(reservationId, dateIssued, totalPrice, seatCount, trainId, train
 }
 
 
-
-export { Ticket };
+function NewReservation(trainId, carId, seatIds){
+    this.trainId = trainId;
+    this.carId = carId;
+    this.seatIds = seatIds; // array of seat ids
+}
+export { Ticket, NewReservation };

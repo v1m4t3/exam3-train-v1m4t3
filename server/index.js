@@ -168,12 +168,12 @@ app.get('/api/trains/:trainId/cars/:carId/seats',
 
 /*** Reservation APIs ***/
 // Get info about seats for a new reservation for a logged-in user
-app.get('/api/reservation/trains/:trainId/cars/:carId/seats', isLoggedIn, 
+app.get('/api/reservations/trains/:trainId/cars/:carId/seats', isLoggedIn, 
   [
     check('trainId').isInt({min:1}).withMessage('must be a positive integer'),
     check('carId').isInt({min:1}).withMessage('must be a positive integer'),
   ],
-  function(req, res) {
+  async function(req, res) {
     const errors = validationResult(req).formatWith(errorFormatter);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
@@ -182,9 +182,28 @@ app.get('/api/reservation/trains/:trainId/cars/:carId/seats', isLoggedIn,
     const trainId = req.params.trainId;
     const carId = req.params.carId;
     console.log(`DEBUG: seats list request for train ${trainId} and car ${carId}`);
-    trainDao.getInfoSeatsByTrainIdAndCarIdForNewReservation(req.user.id, trainId, carId)
-    .then((seats) => {res.json(seats);})
-    .catch((err) => {res.status(500).json(err);});
+
+    try {
+      const availableSeatsInCar = await trainDao.getInfoSeatsByTrainIdAndCarIdForNewReservation(req.user.id, trainId, carId);
+
+      if (availableSeatsInCar.length === 0) {
+        return res.status(404).json({ error: 'No available seats found' });
+      }
+
+      const seats = availableSeatsInCar.map((s) => ({ 
+        seatId: s.idSeat, 
+        seatNumber: s.seatNumber,
+        seatPrice: s.price,
+        seatStatus: s.isBooked 
+          ? (s.isLoggedUserReserved ? 'orange' : 'red') 
+          : 'green'
+      }));
+     
+      return res.json(seats);
+
+    } catch (err) {
+      res.status(500).json(err);
+    }
   });
 
 // Get all reservations of the logged-in user

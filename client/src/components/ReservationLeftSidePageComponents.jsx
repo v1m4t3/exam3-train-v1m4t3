@@ -14,7 +14,9 @@ function LeftSide(props) {
     return (
        <>
         <Button className={`btn-new-reservation ${newReservation ? "selected" : ""}`} variant="warning" size="lg" 
-                onClick={() => setNewReservation(true)}>
+                onClick={() => {setNewReservation(true);
+                                setSelectedReservation(null);
+                            }}> 
           <span className="fs-5">New Reservation  </span>
           <i className="bi bi-ticket-perforated-fill fs-4"></i> 
         </Button>
@@ -60,7 +62,7 @@ function TicketCard(props) {
         </Row>
         <div className="text-left mb-3">
             <span className='fw-bold fs-7'> {capitalizeWords(ticket.carName)}: {ticket.seatCount}  </span>
-            <SeatIconSmall className="seat-indigo-icon" />
+            <SeatIconSmall className="seat-purple-icon" />
         </div>
         {/* Contenuto principale */}
         <Row fontSize="small" className="text-center align-items-center">

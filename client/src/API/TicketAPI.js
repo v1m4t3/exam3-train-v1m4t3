@@ -3,6 +3,23 @@ import { Ticket } from '../Models/TicketModels';
 const URL = 'http://localhost:3001/api/reservations';
 
 
+async function getInfoSeatsByTrainIdAndCarIdAndUserIdLoggedIn(trainId, carId) {
+    let response = await fetch(URL + `/trains/${trainId}/cars/${carId}/seats`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+    });
+    if (response.ok) {
+        const seats = await response.json();
+        console.log("seats cristo dio cristo dio  : ", seats);
+        return seats;
+    } else {
+        const errDetail = await response.json();
+        throw errDetail.message;
+    }
+}
 async function getUserReservations() {
     let response = await fetch(URL, {
         method: 'GET',
@@ -37,4 +54,31 @@ async function getReservationById(reservationId) {
     }
 }
 
-export default { getUserReservations, getReservationById };
+// create a new reservation
+// takes in input and object with: 
+// {
+//   "trainId": ?,
+//   "carId": ?,
+//   "seatIds": [?, ?..., ?]
+// }
+// and returns the created reservation or different type of errors
+async function createNewReservation(reservation) {
+    let response = await fetch(URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(reservation),
+    });
+    if (response.ok) {
+        const t = await response.json();
+        return t;
+    } else {
+        //TODO: FIX ERROR FOR SEATS
+        const errDetail = await response.json();
+        throw errDetail.message;
+    }
+}
+
+export default { getInfoSeatsByTrainIdAndCarIdAndUserIdLoggedIn, getUserReservations, getReservationById, createNewReservation };

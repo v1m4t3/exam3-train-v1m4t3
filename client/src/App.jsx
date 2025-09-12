@@ -112,8 +112,9 @@ function App() {
                             errorMsg={errorMsg} setErrorMsg={setErrorMsg}  /> } />
           <Route path='/my-reservations' element={ loggedIn ?
               <ReservationsRoute user={user} loggedIn={loggedIn} loggedInTotp={loggedInTotp} 
-                                listOfTrains={trains}
-                                initialLoading={initialLoading} errorMsg={errorMsg} setErrorMsg={setErrorMsg}  /> :
+                                listOfTrains={trains} setListOfTrains={setTrains}
+                                initialLoading={initialLoading} setInitialLoading={setInitialLoading}
+                                errorMsg={errorMsg} setErrorMsg={setErrorMsg}  /> :
                           <Navigate to='/' replace /> } />
       </Route>
     

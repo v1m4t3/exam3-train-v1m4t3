@@ -262,17 +262,11 @@ function Seat({ seat }) {
       delay={{ show: 200, hide: 200 }}
     >
 
-    {/* <Button
-      variant='outline-light'
-      disabled={seat.isBooked} onClick={() => alert(`Seat ${seat.seatNumber} selected!`)}
-    > */}
-      {/* <Container flex="true"> */}
+    
       <div className="seat-container" >
         <SeatIcon className={`seat-${seat.isBooked ? "red" : "green"}-icon`} 
                   onClick={() => alert(`Seat ${seat.seatNumber} selected!`)} />
       </div>
-      {/* </Container> */}
-    {/* </Button> */}
     </OverlayTrigger>
   );
 }

@@ -24,6 +24,14 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
+.ticket-card-list-new-reservation {
+  min-width: 750px;
+  margin: 20px auto;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 1rem;
+}
+
 .ticket-delete-icon {
   color: red;
   cursor: pointer;
@@ -180,13 +188,13 @@
   color: #1B5E20;;               
   cursor: pointer;
 }
-.seat-indigo-icon path {
+.seat-purple-icon path {
   color: #6c63ff;                /* Stroke color or fallback */
-  fill: #d6d4ff !important;      /* Light indigo fill */
+  fill: #d6d4ff !important;      /* Light purple fill */
   stroke-width: 2px !important;  /* Thickness of the outline */
 }
 
-.seat-indigo-icon:hover path {
+.seat-purple-icon:hover path {
   fill: #9a86fd !important;      /* Hover fill (slightly brighter) */
   color: #4c44c6;                /* Hover stroke color */
   cursor: pointer;
@@ -201,6 +209,18 @@
 .seat-orange-icon:hover path {
   fill: #ff9c47 !important;     /* Brighter orange on hover */
   color: #cc5c00;               /* Darker stroke on hover */
+  cursor: pointer;
+}
+
+.seat-yellow-icon path {
+  color: #ffd000;               /* Stroke color or fallback */
+  fill: #fff8cc !important;     /* Light yellow fill */
+  stroke-width: 2px !important; /* Outline thickness */
+}
+
+.seat-yellow-icon:hover path {
+  fill: #ffea66 !important;     /* Brighter yellow on hover */
+  color: #c7a600;               /* Darker stroke on hover */
   cursor: pointer;
 }
 
