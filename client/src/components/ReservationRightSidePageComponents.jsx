@@ -429,7 +429,7 @@ const CarSeatsInfoNewReservation = ({seatsInfo, selectedSeatIds}) => {
             </OverlayTrigger>
 
       </div> 
-      <div className="ms-2 mb-3 fs-6">
+      <div className="mb-3 fs-7">
         Total seats : {totalSeats}
       </div>
     
@@ -439,7 +439,6 @@ const CarSeatsInfoNewReservation = ({seatsInfo, selectedSeatIds}) => {
 
 function getRandomElements(allSeats, alreadySelected, n) {
   // Get only available seats
-  console.log("Available seats SUCAAAAAAAAAAAAAAJJ  :", allSeats);
   allSeats = allSeats.filter(
     seat => seat.seatStatus === 'green' || seat.seatStatus === 'yellow'
   );
@@ -615,7 +614,7 @@ function TrainCarNewReservation({ seatsInfo, selectedSeatIds, setSelectedSeatIds
   return (
     <>
     <div className="container p-6">
-      <div className="d-flex align-items-center mb-4 fw-bold fs-6">
+      <div className="d-flex align-items-center mb-4 fw-bold fs-7">
         <span>CHOOSE YOUR SEAT: </span> 
       </div>
     </div>
@@ -741,7 +740,7 @@ function TicketCardDetails(props) {
         </Row>
 
 
-        <div className="text-left mb-3 pt-5">
+        <div className="text-left mx-3 pt-5">
             <span className='fw-bold fs-7'> {capitalizeWords(ticket.carName)}:  </span>
 
             <span className='fw-bold fs-7 ms-4'> {ticket.purpleSeats} </span>
@@ -772,8 +771,8 @@ function TicketCardDetails(props) {
 
         </div> 
         <div className='text-start mx-3 mt-1'>        
-          <span className='fw-bold fs-9'>Total Seats:</span>
-          <span className='fw-bold fs-7 ms-2'>{ticket.seats.length}</span>
+          <span className='fs-7'>Total Seats:</span>
+          <span className='fs-7 ms-2'>{ticket.seats.length}</span>
         </div> 
 
         <div className="page mt-5">

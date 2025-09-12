@@ -206,7 +206,7 @@ export { TrainCard };
 const CarSeatsInfo = ({ carSeats, totalSeats, availableSeats, occupiedSeats }) => {
   return (
     <div className="container p-3">
-      <div className="d-flex align-items-center mb-2 fw-bold fs-5">
+      <div className="d-flex align-items-center mb-2 fw-bold fs-7">
         <span>CAR SEATS :</span>
         <span className="mx-3">{availableSeats}</span>
         <OverlayTrigger placement="top" overlay={<Tooltip>{"Available seat"}</Tooltip>}>
@@ -220,7 +220,7 @@ const CarSeatsInfo = ({ carSeats, totalSeats, availableSeats, occupiedSeats }) =
         </OverlayTrigger>
       </div>
 
-      <div className="ms-2 mb-3 fs-6">
+      <div className="mb-2 fs-7">
         Total seats : {totalSeats}
       </div>
     
@@ -314,7 +314,7 @@ function TrainCarRepresentation({ seatsDetails }) {
   return (
     <>
     <div className="container p-3">
-      <div className="d-flex align-items-center mb-2 fw-bold fs-5">
+      <div className="d-flex align-items-center mb-2 fw-bold fs-7">
         <span>AVAILABLE SEAT: </span> 
       </div>
     </div>

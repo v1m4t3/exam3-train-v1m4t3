@@ -6,7 +6,7 @@ import { Footer } from './FooterBarComponents.jsx';
 function Layout(props) {
 
   return (
-    //<Container fluid>
+    <Container fluid>
       <>
       <Row>
         <Col>
@@ -20,7 +20,7 @@ function Layout(props) {
         </Col>
       </Row>
       </>
-    //</Container>
+    </Container>
   )
 }
 
