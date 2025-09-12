@@ -1,4 +1,4 @@
-import { Alert, Card, Container, Button, Row, Col, Popover, OverlayTrigger } from 'react-bootstrap';
+import { Alert, Card, Container, Button, Row, Col, Popover, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import '../styles/TrainCard.css';
 import '../styles/Train.css';
 import { useEffect, useState } from 'react';
@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import TrainAPI from '../API/TrainAPI.js';
 import { capitalizeWords } from '../utils.js';
 
+import SeatIconSmall from '../assets/icons/seatIconSmall.svg?react';
 import SeatIcon from '../assets/icons/seatIcon.svg?react';
 
 function TrainCard({ train }) {
@@ -208,10 +209,15 @@ const CarSeatsInfo = ({ carSeats, totalSeats, availableSeats, occupiedSeats }) =
       <div className="d-flex align-items-center mb-2 fw-bold fs-5">
         <span>CAR SEATS :</span>
         <span className="mx-3">{availableSeats}</span>
-        <SeatIcon className="seat-green-icon" />
+        <OverlayTrigger placement="top" overlay={<Tooltip>{"Available seat"}</Tooltip>}>
+          <span><SeatIconSmall className="seat-green-icon" /></span>
+        </OverlayTrigger>
         <span className="mx-3">|</span>
+
         <span className="me-2">{occupiedSeats}</span>
-        <SeatIcon className="seat-red-icon" />
+        <OverlayTrigger placement="top" overlay={<Tooltip>{"Occupied by others"}</Tooltip>}>
+          <span><SeatIconSmall className="seat-red-icon" /></span>
+        </OverlayTrigger>
       </div>
 
       <div className="ms-2 mb-3 fs-6">
@@ -264,8 +270,7 @@ function Seat({ seat }) {
 
     
       <div className="seat-container" >
-        <SeatIcon className={`seat-${seat.isBooked ? "red" : "green"}-icon`} 
-                  onClick={() => alert(`Seat ${seat.seatNumber} selected!`)} />
+        <SeatIcon className={`seat-${seat.isBooked ? "red" : "green"}-icon`} />
       </div>
     </OverlayTrigger>
   );

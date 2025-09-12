@@ -4,7 +4,7 @@ import '../styles/TicketCard.css';
 import dayjs from 'dayjs';
 import { capitalizeWords } from '../utils.js';
 import SeatIconSmall from '../assets/icons/seatIconSmall.svg?react';
-import { Button, Card, Col, Row} from 'react-bootstrap';
+import { Button, Card, Col, Row, OverlayTrigger, Tooltip} from 'react-bootstrap';
 import DottedLineWithEnds from './UtilsComponents.jsx';
 import TicketAPI from '../API/TicketAPI.js';
 
@@ -79,12 +79,14 @@ function TicketCard(props) {
             ></i>
        </div>
         <hr style={{ borderTop: '3px solid #ccc', margin: '1rem 0' }} />
-
         
+
         </Row>
         <div className="text-left mb-3">
             <span className='fw-bold fs-7'> {capitalizeWords(ticket.carName)}: {ticket.seatCount}  </span>
-            <SeatIconSmall className="seat-purple-icon" />
+            <OverlayTrigger placement="top" overlay={<Tooltip>{"Occupied by you in this reservation"}</Tooltip>}>
+              <span><SeatIconSmall className="seat-purple-icon" /></span>
+            </OverlayTrigger>
         </div>
         {/* Contenuto principale */}
         <Row fontSize="small" className="text-center align-items-center">
@@ -93,7 +95,6 @@ function TicketCard(props) {
             <div className="station-name">{ticket.departureStation}</div>
             <div className="station-code">{ticket.departureStation.slice(0,3).toUpperCase()}</div>
             
-            {/* <div className="time">{train.departureTime.format('HH:mm')}</div> */}
             <div className="time">{dayjs(ticket.departureTime).format('HH:mm')}</div>      
             </Col>
 
