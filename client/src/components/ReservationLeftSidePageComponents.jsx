@@ -47,7 +47,7 @@ function TicketCard(props) {
       TicketAPI.deleteReservationById(reservationId)
           .then(() => {
               // If successful, update the state to remove the reservation
-              setNewReservation(true);
+              newReservation ? setNewReservation(false) : setNewReservation(true);
               setSelectedReservation(null);
               setDirty(true);
           })
