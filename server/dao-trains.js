@@ -162,7 +162,7 @@ exports.getAllReservationsByUserId = (userId) => {
                 return;
             }
             if (rows === undefined || rows.length === 0) {
-                resolve({'No reservations found for user': userId});
+                resolve({type: 'no_reservation', message: 'No reservations found for user', userId});
                 return;
             }
 

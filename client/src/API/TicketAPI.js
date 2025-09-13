@@ -13,7 +13,6 @@ async function getInfoSeatsByTrainIdAndCarIdAndUserIdLoggedIn(trainId, carId) {
     });
     if (response.ok) {
         const seats = await response.json();
-        console.log("seats cristo dio cristo dio  : ", seats);
         return seats;
     } else {
         const errDetail = await response.json();
@@ -30,6 +29,8 @@ async function getUserReservations() {
     });
     if (response.ok) {
         const reservations = await response.json();
+        if (reservations.type === 'no_reservation') return [];
+        console.log("reservations: ", reservations);
         return reservations.map(t => new Ticket(t.reservationId, t.dateIssued, t.totalPrice, t.seatCount, t.trainId, t.trainNumber, t.departureStation, t.departureTime, t.arrivalStation, t.arrivalTime, t.trainDate, t.carId, t.carName));
     } else {
         const errDetail = await response.json();

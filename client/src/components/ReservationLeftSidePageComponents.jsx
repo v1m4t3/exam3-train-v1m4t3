@@ -4,7 +4,7 @@ import '../styles/TicketCard.css';
 import dayjs from 'dayjs';
 import { capitalizeWords } from '../utils.js';
 import SeatIconSmall from '../assets/icons/seatIconSmall.svg?react';
-import { Button, Card, Col, Row, OverlayTrigger, Tooltip} from 'react-bootstrap';
+import { Button, Card, Col, Row, OverlayTrigger, Tooltip, Alert} from 'react-bootstrap';
 import DottedLineWithEnds from './UtilsComponents.jsx';
 import TicketAPI from '../API/TicketAPI.js';
 
@@ -21,7 +21,14 @@ function LeftSide(props) {
           <i className="bi bi-ticket-perforated-fill fs-4"></i> 
         </Button>
 
-        {listOfReservations.map((reservation) => (
+        {listOfReservations.length === 0 ? (
+         <div className="d-flex justify-content-center align-items-center flex-column p-4">
+            <Alert variant="dark" className="text-center w-100">
+                <h5 className="mb-3">It looks like you haven't booked any train tickets yet.</h5>
+                <p>Click the button above to make your first reservation.</p>
+            </Alert>
+          </div>
+        ) : listOfReservations.map((reservation) => (
           <TicketCard key={reservation.reservationId} ticket={reservation} 
                       selectedReservation={selectedReservation} setSelectedReservation={setSelectedReservation} 
                       newReservation={newReservation} setNewReservation={setNewReservation} 

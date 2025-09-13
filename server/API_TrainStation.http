@@ -1,0 +1,128 @@
+# This file could be used for testing the API with Visual Studio Code
+
+## Login a user.
+POST http://localhost:3001/api/sessions HTTP/1.1
+content-type: application/json
+
+{
+  "username": "harry@test.com",
+  "password": "pwd"
+}
+###
+
+## Login with OTP code.
+POST http://localhost:3001/api/login-totp HTTP/1.1
+content-type: application/json
+
+{
+  "code": "623560"
+}
+###
+
+## Get list of all trains.
+GET http://localhost:3001/api/trains HTTP/1.1
+content-type: application/json
+
+###
+
+## Get list of all cars for a specific train(trainId).
+GET http://localhost:3001/api/trains/1/cars HTTP/1.1
+content-type: application/json
+
+###
+
+## Get list of seat info by trainId and carId(No logged in).
+GET http://localhost:3001/api/trains/1/cars/1/seats HTTP/1.1
+content-type: application/json
+
+###
+
+## [ERROR]Get list of seat info by trainId and carId(NO logged in).
+GET http://localhost:3001/api/trains/1/cars/5/seats HTTP/1.1
+content-type: application/json
+
+###
+
+## Get list of seat info by trainId and carId(Logged in).
+GET http://localhost:3001/api/reservations/trains/1/cars/3/seats HTTP/1.1
+content-type: application/json
+
+###
+
+## Get reservation list for the logged-in user.
+GET http://localhost:3001/api/reservations HTTP/1.1
+content-type: application/json
+
+###
+
+## Get reservation info by reservationId for the logged-in user.
+GET http://localhost:3001/api/reservations/1 HTTP/1.1
+content-type: application/json
+
+###
+
+## Create a new reservation for the logged-in user.
+POST http://localhost:3001/api/reservations HTTP/1.1
+content-type: application/json
+
+{
+  "trainId": 1,
+  "carId": 3,
+  "seatIds": [80, 85]
+}
+
+###
+
+## Create a new reservation for the logged-in user(1 car).
+POST http://localhost:3001/api/reservations HTTP/1.1
+content-type: application/json
+
+{
+  "trainId": 1,
+  "carId": 1,
+  "seatIds": [5]
+}
+
+###
+
+## [ERROR_WRONG_ID_SEAT]Create a new reservation for the logged-in user.
+POST http://localhost:3001/api/reservations HTTP/1.1
+content-type: application/json
+
+{
+  "trainId": 1,
+  "carId": 3,
+  "seatIds": [999, 1000]
+}
+
+###
+
+## [ERROR_SEATS_DIFFERENT_CAR]Create a new reservation for the logged-in user.
+POST http://localhost:3001/api/reservations HTTP/1.1
+content-type: application/json
+
+{
+  "trainId": 1,
+  "carId": 2,
+  "seatIds": [5, 6]
+}
+
+###
+
+## [ERROR_SEAT_ALREADY_RESERVED]Create a new reservation for the logged-in user.
+POST http://localhost:3001/api/reservations HTTP/1.1
+content-type: application/json
+
+{
+  "trainId": 1,
+  "carId": 3,
+  "seatIds": [80, 85]
+}
+
+###
+
+## Delete a reservation by reservationId for the logged-in user.
+DELETE http://localhost:3001/api/reservations/9 HTTP/1.1
+content-type: application/json
+
+###
