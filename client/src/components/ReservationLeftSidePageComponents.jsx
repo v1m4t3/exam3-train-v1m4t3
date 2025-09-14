@@ -76,7 +76,7 @@ function TicketCard(props) {
           TICKET #{ticket.reservationId}  
         </span>
             <span className="ticket-date-buy" > 
-                (Buyed: {dayjs(ticket.trainDate).format('DD MMMM YYYY')})
+                (Buyed: {dayjs(ticket.dateIssued).format('DD MMMM YYYY')})
             </span>
 
        </span> 
