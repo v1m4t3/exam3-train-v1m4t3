@@ -8,13 +8,14 @@ const cors = require('cors');
 const dayjs = require('dayjs');
 require('dotenv').config(); // load the environment variables from the .env file
 
-//const filmDao = require('./dao-films'); // module for accessing the films table in the DB
 const userDao = require('./dao-users'); // module for accessing the user table in the DB
 const trainDao = require('./dao-trains'); // module for accessing the trains table in the DB
+
 
 /*** init express and set-up the middlewares ***/
 const app = express();
 const PORT = process.env.PORT || 3001;
+const { FIRST_CLASS_CAR_NAME } = require('./constants.js');
 
 app.use(morgan('dev'));
 app.use(express.json());
@@ -320,8 +321,17 @@ app.post('/api/reservations',
   [
     check('trainId').isInt({min:1}).withMessage('must be a positive integer'),
     check('carId').isInt({min:1}).withMessage('must be a positive integer'),
-    check('seatIds').isArray({min:1}).withMessage('must be a non-empty array'),
+    check('seatIds').isArray({min:1}).withMessage('must be a non-empty array')
+                                    .custom((seatIds) => {
+                                                      const normalized = seatIds.map(Number);// convert to number
+                                                      const uniqueSeats = new Set(normalized);// get unique values
+                                                      if (uniqueSeats.size !== normalized.length) {
+                                                        throw new Error('seatIds must not contain duplicates');
+                                                      }
+                                                      return true;
+                                                    }),
     check('seatIds.*').isInt({min:1}).withMessage('each seatId must be a positive integer'),
+                    
   ],
   async function(req, res) {
     const errors = validationResult(req).formatWith(errorFormatter);
@@ -333,16 +343,27 @@ app.post('/api/reservations',
     const { trainId, carId, seatIds } = req.body;
     console.log(`DEBUG: new reservation request for user ${userId}, train ${trainId}, car ${carId}, seats ${seatIds}`);
     
-    //ADD CONTROLS ON THE USER INPUT
-
 
     // for simplicity, we only have train with id=1
     if(trainId != 1){
       return res.status(400).json({ error: 'Only train 1 is available for reservations' });
     }
-    // the user must have done TOTP authentication to book seats in first class cars (carId < 2)
-    if(!req.totpVerified && carId < 2) {
-      return res.status(401).json({ error: 'TOTP authentication required to book seats in first class cars'});
+    try {
+      const cars = await trainDao.getExistingCarsByTrainId(trainId);
+
+      const filteredCarIds = cars.filter((car)=>{
+          return car.idCar === carId;
+      })
+
+      if(filteredCarIds.length === 0){
+        return res.status(400).json({ error: `Car ${carId} does not exist for train ${trainId}` });
+      }
+      // the user must have done TOTP authentication to book seats in first class cars (carId < 2)
+      if(!req.totpVerified && filteredCarIds.length > 0 && filteredCarIds[0].carName === FIRST_CLASS_CAR_NAME) {
+        return res.status(401).json({ error: 'TOTP authentication required to book seats in first class cars'});
+      }
+    } catch(err) {
+      return res.status(500).json({ error: 'Internal Server Error' });
     }
 
 
